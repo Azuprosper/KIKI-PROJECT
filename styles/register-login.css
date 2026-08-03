@@ -1,0 +1,44 @@
+
+.form-section {
+  flex: 1;       
+  display: flex;
+  flex-direction: column; 
+  gap: 15px;   
+}
+
+.my-account{
+  margin-top: 80px;
+  font-size: 40px;
+  display: block;
+  font-weight: bold;
+}
+
+
+.placeholders{
+  height: 35px;
+}
+
+.labels{
+  font-weight: bold;
+}
+.signin-buttons{
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-weight: bold;
+  background-color: rgb(0, 153, 255);
+  border: none;
+  cursor: pointer;
+}
+.signin-buttons:hover{
+  opacity: 0.7;
+}
+.paddings{
+  margin-left: 20%;
+  margin-right: 20%;
+}
+
+@media (max-width: 768px) {
+  .account-container {
+    flex-direction: column; 
+  }
+}

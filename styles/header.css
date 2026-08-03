@@ -1,0 +1,39 @@
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Ensures it stays on top of other page content */
+    background-color: black;
+    color: white;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 15px 30px;
+    box-sizing: border-box;
+}
+
+header .logo {
+    justify-self: start;
+}
+
+header .logo img {
+    height: 45px; 
+    width: auto;
+    display: block;
+}
+
+/* 2. Tagline sits in the exact middle column */
+header .tagline {
+    justify-self: center;
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* 3.  SVG goes to the right column */
+header .user-actions {
+    justify-self: end;
+}
+body {
+    padding-top: 55px;
+}

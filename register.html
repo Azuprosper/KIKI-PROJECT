@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Register</title>
+
+    <!-- This code is needed for responsive design to work.
+      (Responsive design = make the website look good on
+      smaller screen sizes like a phone or a tablet). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Load a font called Roboto from Google Fonts. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/header.css">
+    <link rel="stylesheet" href="/styles/register-login.css">
+  </head>
+  <body>
+
+    <header>
+        <div class="logo"><img src="images/kiki-logo.webp" alt="Kiki Logo"></div>
+        <div class="tagline">YOUR BEST ELECTRICAL APPLIANCES</div>
+        <div class="user-actions">
+            <!-- Add your arrow icons or user profile icon here -->
+        </div>
+    </header>
+    <div class="paddings">
+    <div class="my-account">My Account</div>
+
+
+<div class="form-section">
+  <h2>Register</h2>
+  <label class="labels">First Name</label>
+  <input type="text" id="register-firstname" class="placeholders">
+  <label class="labels">Last Name</label>
+  <input type="text" id="register-lastname" class="placeholders">
+  <label class="labels">Username </label>
+  <input type="text" id="register-username" class="placeholders">
+  <label class="labels">Email address </label>
+  <input type="email" id="register-email" class="placeholders">
+  <label class="labels">Phone Number </label>
+  <input type="tel" id="register-phone" class="placeholders" placeholder="0800 000 0000" required>
+  <label class="labels">Password </label>
+  <input type="password" id="register-password" class="placeholders">
+  <p>Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our <a class="privacy-link" href="privacypolicy.html">privacy policy</a>.</p>
+  <button id="register-button" class="signin-buttons">Register</button>
+  <p>Already Have An Account?<a href="login.html">Log In</a> </p>
+  <p id="register-error" class="error-message"></p>
+</div>
+</div>
+
+</body>
