@@ -33,7 +33,58 @@ header .tagline {
 /* 3.  SVG goes to the right column */
 header .user-actions {
     justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 16px;
 }
+header .user-actions:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Hide the dropdown by default */
+ header .dropdown-menu {
+    display: none; 
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: rgb(153, 165, 173);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 6px;
+    width: 150px;
+    height: 100px;
+    padding: 15px;
+    z-index: 1000;
+}
+
+/* A class we will toggle via JS to show it */
+header .dropdown-menu.show {
+    display: block;
+}
+header .dropdown-links{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;  
+}
+header .dropdown-links a {
+    color: black;
+    text-decoration: none;
+    font-size: 15px;
+}
+header .dropdown-links a:hover {
+    text-decoration: underline;
+}
+
 body {
-    padding-top: 55px;
+    padding-top: 80px; 
 }
+

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>KIKI</title>
+
+    <!-- This code is needed for responsive design to work.
+      (Responsive design = make the website look good on
+      smaller screen sizes like a phone or a tablet). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Load a font called Roboto from Google Fonts. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/header.css">
+    <link rel="stylesheet" href="styles/kiki.css">
+  </head>
+  <body>
+
+    <header>
+        <div class="logo"><img src="images/kiki-logo.webp" alt="Kiki Logo"></div>
+        <div class="tagline">YOUR BEST ELECTRICAL APPLIANCES</div>
+        
+        <div class="user-actions-container">
+        <button class="user-actions" id="account-btn">
+           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 21.0001C19.713 17.269 16.7289 14.3151 12.995 14.0662L12 13.9999C11.6446 14.0096 11.3134 14.0225 11.0008 14.0378C7.3 14.2192 4.28417 17.3057 4 21.0001"></path>
+    <circle cx="12" cy="6.99988" r="4"></circle>
+</svg><span>Account</span>
+        </button>
+
+        <div id="account-dropdown" class="dropdown-menu">
+            <ul class="dropdown-links">
+                <li><a href="account-info.html" >My Account</a></li>
+                <li><a href="login.html">LogOut</a></li>
+            </ul>
+        </div>
+       </div>
+    </header>
+
+
+  <div class="search-section">
+        <p class="search-title">What are you looking for?</p>
+        <div class="search-inputs">
+          <input type="text" placeholder="I am looking for..." class="search-input">
+          <button class="search-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 17L21 21"></path>
+      <path d="M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z"></path>
+  </svg>
+          </button>
+        </div>
+  </div>
+
+  <script src="scripts/kiki.js"></script>
+
+  </body>
