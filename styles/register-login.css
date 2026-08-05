@@ -70,6 +70,9 @@ body {
   font-weight: bold;
 }
 
+.error-message{
+  color: red;
+}
 
 @media (max-width: 768px) {
   .account-container {
