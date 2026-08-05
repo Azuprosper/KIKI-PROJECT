@@ -21,6 +21,8 @@
         <div class="logo"><img src="images/kiki-logo.webp" alt="Kiki Logo"></div>
         <div class="tagline">YOUR BEST ELECTRICAL APPLIANCES</div>
         
+        <div class="header-right-actions">
+
         <div class="user-actions-container">
         <button class="user-actions" id="account-btn">
            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -29,13 +31,21 @@
 </svg><span>Account</span>
         </button>
 
-        <div id="account-dropdown" class="dropdown-menu">
+          <div id="account-dropdown" class="dropdown-menu">
             <ul class="dropdown-links">
                 <li><a href="account-info.html" >My Account</a></li>
                 <li><a href="login.html">LogOut</a></li>
             </ul>
         </div>
-       </div>
+      </div>
+        
+
+       <a href="" class="cart-link">
+            <img src="images/icons/cart-icon.png" class="cart-icon">
+            <span class="cart-quantity">0</span>
+            <span class="cart-text">Cart</span>
+        </a>
+        </div>
     </header>
 
 
@@ -51,6 +61,28 @@
           </button>
         </div>
   </div>
+
+
+  <!-- The product lists begins here -->
+
+  <div class="products-grid" id="products-container">
+    <!-- Product 1 -->
+    <div class="product-card">
+        <img src="images/basketball.webp" alt="Basketball" class="product-image">
+        <div class="product-name">Intermediate Size Basketball</div>
+        <div class="product-price">$20.95</div>
+        <button class="add-to-cart-btn">Add to Cart</button>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product-card">
+        <img src="images/toaster.webp" alt="Toaster" class="product-image">
+        <div class="product-name">2 Slot Toaster - Black</div>
+        <div class="product-price">$18.99</div>
+        <button class="add-to-cart-btn">Add to Cart</button>
+    </div>
+</div>
+
 
   <script src="scripts/kiki.js"></script>
 

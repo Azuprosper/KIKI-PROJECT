@@ -28,6 +28,7 @@ header .tagline {
     justify-self: center;
     margin: 0;
     white-space: nowrap;
+    
 }
 
 /* 3.  SVG goes to the right column */
@@ -44,8 +45,13 @@ header .user-actions {
     border-radius: 4px;
     font-size: 16px;
 }
+
 header .user-actions:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+header .user-actions-container {
+    position: relative;
+    display: inline-block;
 }
 
 /* Hide the dropdown by default */
@@ -83,6 +89,41 @@ header .dropdown-links a {
 header .dropdown-links a:hover {
     text-decoration: underline;
 }
+header .cart-link {
+  color: white;
+  display: flex;
+  align-items: center;
+  position: relative;
+  text-decoration: none;
+}
+
+header .cart-icon {
+  width: 40px;
+}
+
+header .cart-text {
+ margin-top: 0; 
+ margin-left: 4px;
+ font-size: 15px;
+ font-weight: 700;
+}
+
+header .cart-quantity {
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  position: absolute;
+  top: 1px;
+  left: 11px;
+  width: 26px;
+  text-align: center;
+}
+
+header .header-right-actions {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 20px;
 
 body {
     padding-top: 80px; 
