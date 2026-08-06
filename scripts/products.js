@@ -1,5 +1,5 @@
 // const BASE_URL = 'http://localhost:4200';
-export const API_URL = 'http://192.168.0.154:4200/api/products';
+export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
 
 export async function loadProducts(searchKeyword = ''){
   try {
@@ -8,7 +8,10 @@ export async function loadProducts(searchKeyword = ''){
     if (searchKeyword && typeof searchKeyword === 'string' && searchKeyword.trim() !== ''){
       url = `${API_URL}?search=${encodeURIComponent(searchKeyword.trim())}`;
     }
-    const response = await fetch(url);
+    const response = await fetch(url , {method: "GET", headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true"
+    }});
     const data = await response.json();
     
     // Extract the array from the backend
