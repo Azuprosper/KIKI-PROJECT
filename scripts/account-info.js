@@ -1,45 +1,39 @@
-// TODO: Replace with your exact backend endpoint for fetching user profile details
-const ACCOUNT_INFO_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/users/me'; // Or whatever your backend route is called
+const ACCOUNT_INFO_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/users/me'; 
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Grabbing the read-only input elements from your HTML
-    const firstNameInput = document.getElementById('register-firstname');
-    const lastNameInput = document.getElementById('register-lastname');
-    const usernameInput = document.getElementById('register-username');
-    const emailInput = document.getElementById('register-email');
-    const phoneInput = document.getElementById('register-phone');
+    const firstNameSpan = document.getElementById('info-firstname');
+    const lastNameSpan = document.getElementById('info-lastname');
+    const usernameSpan = document.getElementById('info-username');
+    const emailSpan = document.getElementById('info-email');
+    const phoneSpan = document.getElementById('info-phone');
 
-    // Retrieve the auth token saved during login (adjust the key if your app uses something else like 'token' or 'jwt')
-    const authToken = localStorage.getItem('token') || localStorage.getItem('authToken');
-
+    const authToken = localStorage.getItem('token');
+    console.log(authToken);
     try {
-        const response = await fetch(ACCOUNT_INFO_API_URL, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                // Send the token so the backend knows who is requesting their data
-                ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
-            }
-        });
 
+        const response = await fetch(ACCOUNT_INFO_API_URL, {
+            method: 'GET',            
+            headers: {
+                "Authorization": `Bearer ${authToken}`,            
+                "Content-Type": 'application/json',
+                "ngrok-skip-browser-warning": "true"  //it skips the CORS browser warning on my console
+            }  
+        });
+        
         const data = await response.json().catch(() => null);
 
         if (response.ok && data) {
-            // Populate the input fields with the data coming from the backend
-            // (Adjust property names like data.phoneNumber if your backend names them differently)
-            if (firstNameInput) firstNameInput.value = data.firstName || '';
-            if (lastNameInput) lastNameInput.value = data.lastName || '';
-            if (usernameInput) usernameInput.value = data.username || '';
-            if (emailInput) emailInput.value = data.email || '';
-            if (phoneInput) phoneInput.value = data.phoneNumber || data.phone || '';
+            if (firstNameSpan) firstNameSpan.textContent = data.firstName || 'N/A';
+            if (lastNameSpan) lastNameSpan.textContent = data.lastName || 'N/A';
+            if (usernameSpan) usernameSpan.textContent = data.username || 'N/A';
+            if (emailSpan) emailSpan.textContent = data.email || 'N/A';
+            if (phoneSpan) phoneSpan.textContent = data.phoneNumber || data.phone || 'N/A';
         } else {
-            console.error("Failed to load account info:", data?.message || "Unauthorized or error fetching profile.");
-            // Optional: redirect to login if unauthorized
+            console.error("Failed to load account info:", data?.message || "Unauthorized.");
             if (response.status === 401) {
                 window.location.href = 'login.html';
             }
         }
-
     } catch (error) {
         console.error("Network error while fetching account info:", error);
     }

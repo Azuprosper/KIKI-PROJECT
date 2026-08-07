@@ -1,5 +1,5 @@
 // The exact login endpoint provided by your backend guy
-const LOGIN_API_URL = 'http://192.168.0.154:4200/api/auth/login';
+const LOGIN_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/auth/login';
 
 // DOMContentLoaded is a built-in browser event that fires as soon as the initial HTML document has been completely loaded and parsed, without waiting for stylesheets, images, and subframes to finish loading.---->AZU
 
@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 // If login is successful, parse the response if needed
                 const data = await response.json().catch(() => ({}));
+
+                localStorage.setItem("token", data.token)
                 
                 // alert("Login successful!");
                 
