@@ -1,16 +1,52 @@
 const RESET_PASSWORD_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/auth/reset-password';
+const VALIDATE_TOKEN_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/auth/reset-password/validate';
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Grab the inputs using your exact new HTML IDs
+document.addEventListener('DOMContentLoaded', async () => {
     const passwordInput = document.getElementById('new-password-error');
     const confirmPasswordInput = document.getElementById('confirm-password-error');
     const confirmBtn = document.getElementById('login-button');
-    const generalError = document.getElementById('general-error'); // Using your distinct error ID
+    const generalError = document.getElementById('general-error'); 
 
-    // Grab the token automatically from the URL query parameters (e.g., ?token=xyz123)
+    // Grab the token automatically from the URL query parameters
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
+    // 1. Validate the token/URL as soon as the page loads
+
+    if (!token) {
+        if (generalError) generalError.textContent = "Missing reset token in URL.";
+        if (confirmBtn) confirmBtn.disabled = true;
+    } else {
+        try {
+            const validateResponse = await fetch(`${VALIDATE_TOKEN_API_URL}?token=${encodeURIComponent(token)}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            // Let's check what the server actually sends back
+            const responseText = await validateResponse.text();
+            let validateData;
+            try {
+                validateData = JSON.parse(responseText);
+            } catch (e) {
+                validateData = responseText;
+            }
+
+            if (!validateResponse.ok) {
+                const errorMsg = typeof validateData === 'object' ? (validateData?.message || validateData?.error) : validateData;
+                if (generalError) generalError.textContent = errorMsg || "Invalid or expired reset link.";
+                if (confirmBtn) confirmBtn.disabled = true; 
+            } else {
+                console.log("Token validation successful:", validateData);
+            }
+        } catch (error) {
+            // This will show us the real reason in your browser console (F12 -> Console)
+            console.error("Detailed validation network/CORS error:", error);
+            // Don't disable the button here so you can still test your reset if CORS is just being stubborn
+        }
+    }
+
+    // 2. Handle the actual password reset submission
     const handleReset = async () => {
         if (generalError) generalError.textContent = '';
 
@@ -38,10 +74,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json().catch(() => null);
 
             if (response.ok) {
+                // Correct URL and matching passwords -> Redirects to login page
                 window.location.href = 'login.html';
             } else {
                 console.log("Full error response object from backend:", data);
-                const backendErrorMessage = data?.message || data?.error || data?.token || data?.password;
+                const backendErrorMessage = data?.message || data?.error || data?.token || data?.password || "Password reset failed.";
                 if (generalError) {
                     generalError.textContent = backendErrorMessage;
                 }
@@ -69,5 +106,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 handleReset();
             }
         });
-    }
+    } 
 });

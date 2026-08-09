@@ -20,9 +20,6 @@
     <header>
         <div class="logo"><a href="kiki.html"><img src="images/kiki-logo.webp" alt="Kiki Logo"></a></div>
         <div class="tagline">THE BEST E-COMMERCE PLATFORM</div>
-        <div class="user-actions">
-            <!-- Add your arrow icons or user profile icon here -->
-        </div>
     </header>
        
          <div class="login-margin">
@@ -30,18 +27,34 @@
 
             <div class="form-section">
               <h2>Account Info</h2>
-              <label class="labels">First Name</label>
-          <input type="text" id="register-firstname" class="placeholders" readonly>
-          <label class="labels">Last Name</label>
-          <input type="text" id="register-lastname" class="placeholders" readonly>
-          <label class="labels">Username </label>
-          <input type="text" id="register-username" class="placeholders" readonly>
-          <label class="labels">Email address </label>
-          <input type="email" id="register-email" class="placeholders" readonly>
-          <label class="labels">Phone Number </label>
-          <input type="tel" id="register-phone" class="placeholders" readonly>
+             <div class="account-info-container">
+            <div class="info-group">
+                <span class="info-label">First Name</span>
+                <span id="info-firstname" class="info-value">Loading...</span>
             </div>
-          </div>
+
+            <div class="info-group">
+                <span class="info-label">Last Name</span>
+                <span id="info-lastname" class="info-value">Loading...</span>
+            </div>
+
+            <div class="info-group">
+                <span class="info-label">Username</span>
+                <span id="info-username" class="info-value">Loading...</span>
+            </div>
+
+            <div class="info-group">
+                <span class="info-label">Email Address</span>
+                <span id="info-email" class="info-value">Loading...</span>
+            </div>
+
+            <div class="info-group">
+                <span class="info-label">Phone Number</span>
+                <span id="info-phone" class="info-value">Loading...</span>
+            </div>
+        </div>
+      </div>
+    </div>
 
           <script src="scripts/account-info.js"></script>
 

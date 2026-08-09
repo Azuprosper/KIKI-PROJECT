@@ -7,7 +7,7 @@
 }
 
 .my-account{
-  /* margin-top: 8px; */
+  margin-top: 8px; 
   font-size: 40px;
   display: block;
   font-weight: bold;
@@ -34,37 +34,37 @@
 }
 
 .login-margin{
-    width: 100%;
-    max-width: 500px;
-    background-color: white;
-    padding: 40px;
-    box-sizing: border-box;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 500px;
+  background-color: white;
+  padding: 40px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .register-margin{
-    width: 100%;
-    max-width: 1000px;
-    background-color: white;
-    padding-left: 40px;
-    padding-right: 40px;
-    padding-top: 10px;
-    padding-bottom: 0;
-    box-sizing: border-box;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 1000px;
+  background-color: white;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 10px;
+  padding-bottom: 0;
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 
 body {
-    display: flex;
-    justify-content: center; /* Centers horizontally */
-    align-items: center;     /* Centers vertically */
-    min-height: 100vh;
-    margin: 0;
-    box-sizing: border-box;
-    background-color: grey;
+  display: flex;
+  justify-content: center;
+  align-items: center;    
+  min-height: 100vh;
+  margin: 0;
+  box-sizing: border-box;
+  background-color: grey;
 }
 .forgot-password{
   font-weight: bold;
@@ -73,6 +73,34 @@ body {
 .error-message{
   color: red;
 }
+
+
+/* Account info begins here */
+
+.account-info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+.info-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.info-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #717171;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.info-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: #111111;
+}
+
 
 @media (max-width: 768px) {
   .account-container {
