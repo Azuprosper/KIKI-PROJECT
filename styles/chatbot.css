@@ -1,0 +1,101 @@
+#chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    font-family: Arial, sans-serif;
+  }
+  #chat-toggle-btn {
+    background-color: rgb(26, 84, 191);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+  }
+  #chat-window {
+    width: 350px;
+    height: 480px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .chat-hidden { display: none !important; }
+  .chat-header {
+    background: rgb(26, 84, 191);
+    color: white;
+    padding: 12px 16px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .close-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+  .chat-messages {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .message {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .bot-message { 
+    background-color: rgb(153, 165, 173); align-self: flex-start; 
+    color: black; 
+  }
+  .user-message { 
+    background-color: rgb(26, 84, 191);
+    color: white; 
+    align-self: flex-end; 
+  }
+  .product-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px;
+    margin-top: 6px;
+    font-size: 12px;
+  }
+  .product-card strong { color: rgb(26, 84, 191); display: block; }
+  .chat-input-area {
+    display: flex;
+    padding: 8px;
+    background: white;
+    border-top: 1px solid #ddd;
+    gap: 6px;
+  }
+  .chat-input-area input[type="text"] {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 20px;
+    outline: none;
+  }
+  .icon-btn, .send-btn {
+    background: rgb(26, 84, 191);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+  .icon-btn { background: rgb(153, 165, 173); }
