@@ -1,5 +1,5 @@
 // const BASE_URL = 'http://localhost:4200';
-export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
+export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products?size=100';
 
 const CART_KEY = 'cart';
 
@@ -47,7 +47,7 @@ export async function loadProducts(searchKeyword = ''){
   try {
     let url = API_URL;
     if (searchKeyword && typeof searchKeyword === 'string' && searchKeyword.trim() !== ''){
-      url = `${API_URL}?search=${encodeURIComponent(searchKeyword.trim())}`;
+        url = `${API_URL}&search=${encodeURIComponent(searchKeyword.trim())}`;
     }
     const response = await fetch(url , {method: "GET", headers: {
       "Content-Type": "application/json",
