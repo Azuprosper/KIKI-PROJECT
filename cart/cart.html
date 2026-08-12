@@ -2,28 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KIKI — My Cart</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Shared Header CSS (one level up) -->
   <link rel="stylesheet" href="../styles/header.css" />
-  <link rel="stylesheet" href="../styles/kiki.css" />
+
+  <!-- Cart-specific CSS -->
   <link rel="stylesheet" href="cart.css" />
-  <title>Cart | KIKI</title>
 </head>
 <body>
 
-  <!-- GLOBAL HEADER -->
+  <!-- ═══════════════════════════════════════
+       HEADER  (mirrors kiki.html header)
+  ════════════════════════════════════════ -->
   <header>
-    <div class="logo"><a href="../kiki.html"><img src="../images/kiki-logo.webp" alt="Kiki Logo"></a></div>
+    <div class="logo">
+      <a href="../kiki.html">
+        <img src="../images/kiki-logo.webp" alt="Kiki Logo" />
+      </a>
+    </div>
     <div class="tagline">THE BEST E-COMMERCE PLATFORM</div>
+
     <div class="header-right-actions">
+
+      <!-- Account dropdown -->
       <div class="user-actions-container">
         <button class="user-actions" id="account-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21.0001C19.713 17.269 16.7289 14.3151 12.995 14.0662L12 13.9999C11.6446 14.0096 11.3134 14.0225 11.0008 14.0378C7.3 14.2192 4.28417 17.3057 4 21.0001"></path>
-            <circle cx="12" cy="6.99988" r="4"></circle>
-          </svg><span>Account</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               width="24" height="24" fill="none" stroke="currentColor"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21C19.713 17.269 16.729 14.315 12.995 14.066L12 14C11.645 14.01
+                     11.313 14.023 11.001 14.038C7.3 14.219 4.284 17.306 4 21"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>Account</span>
         </button>
         <div id="account-dropdown" class="dropdown-menu">
           <ul class="dropdown-links">
@@ -32,119 +50,162 @@
           </ul>
         </div>
       </div>
-      <a href="cart.html" class="cart-link">
-        <img src="../images/icons/cart-icon.png" class="cart-icon">
-        <span class="cart-quantity">0</span>
+
+      <!-- Cart link (active state) -->
+      <a href="cart.html" class="cart-link active-cart-link">
+        <img src="../images/icons/cart-icon.png" class="cart-icon" alt="Cart" />
+        <span class="cart-quantity" id="header-cart-count">0</span>
         <span class="cart-text">Cart</span>
       </a>
+
     </div>
   </header>
 
-  <!-- [01] CART HEADER -->
-  <header id="cart-header">
-    <nav class="breadcrumb">
-      <a href="../kiki.html">Shop</a> &rsaquo; <span>Cart</span>
+  <!-- ═══════════════════════════════════════
+       PAGE HERO BANNER
+  ════════════════════════════════════════ -->
+  <section class="cart-hero">
+    <h1>My Cart</h1>
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <a href="../kiki.html">Home</a>
+      <span class="bc-sep">›</span>
+      <span class="bc-current">Cart</span>
     </nav>
-    <h1>Your Cart (<span id="cart-count">0</span> items)</h1>
-  </header>
+  </section>
 
-  <!-- [02] MAIN LAYOUT -->
-  <main id="cart-main">
+  <!-- ═══════════════════════════════════════
+       NOTIFICATION BANNER
+  ════════════════════════════════════════ -->
+  <div id="cart-notification" class="cart-notification hidden" role="alert"></div>
 
-    <!-- [03] CART ITEM LIST -->
-    <section id="cart-item-list">
-      <table id="cart-table">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th>Variant</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Total</th>
-            <th>Remove</th>
-          </tr>
-        </thead>
-        <tbody id="cart-tbody"></tbody>
-      </table>
-    </section>
+  <!-- ═══════════════════════════════════════
+       MAIN CART SECTION
+  ════════════════════════════════════════ -->
+  <main class="cart-main section-p">
 
-    <!-- [04] CART SIDEBAR -->
-    <aside id="cart-sidebar">
-      <!-- [05] COUPON FIELD -->
-      <div id="coupon-field">
-        <label for="coupon-input">Coupon code</label>
-        <div class="coupon-row">
-          <input type="text" id="coupon-input" placeholder="Enter code" />
-          <button id="coupon-apply-btn">Apply</button>
-        </div>
-        <p id="coupon-message" class="coupon-message"></p>
+    <!-- ── LOADING SKELETON ── -->
+    <div id="cart-loading" class="cart-loading hidden" aria-live="polite">
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+    </div>
+
+    <!-- ── EMPTY CART STATE ── -->
+    <div id="cart-empty" class="cart-empty hidden">
+      <div class="empty-icon">🛒</div>
+      <h2>Your cart is empty</h2>
+      <p>Looks like you haven't added anything yet.</p>
+      <a href="../kiki.html" class="btn-primary">Continue Shopping</a>
+    </div>
+
+    <!-- ── CART CONTENT (table + summary) ── -->
+    <div id="cart-content" class="cart-content hidden">
+
+      <!-- Cart Table -->
+      <div class="cart-table-wrapper">
+        <table class="cart-table" id="cart-table">
+          <thead>
+            <tr>
+              <th>Remove</th>
+              <th>Image</th>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="cart-tbody">
+            <!-- Dynamically injected by cart-render.js -->
+          </tbody>
+        </table>
       </div>
 
-      <!-- [06] CART SUMMARY -->
-      <div id="cart-summary">
-        <div class="summary-row">
-          <span>Subtotal</span>
-          <span id="summary-subtotal">$0.00</span>
-        </div>
-        <div class="summary-row">
-          <span>Tax</span>
-          <span id="summary-tax">$0.00</span>
-        </div>
-        <div class="summary-row">
-          <span>Shipping</span>
-          <span id="summary-shipping">Free</span>
-        </div>
-        <div class="summary-row summary-total">
-          <span>Total</span>
-          <span id="summary-total">$0.00</span>
-        </div>
+      <!-- Below-table actions -->
+      <div class="cart-actions">
+        <a href="../kiki.html" class="btn-outline">← Continue Shopping</a>
+        <button id="btn-clear-cart" class="btn-danger">Clear Cart</button>
       </div>
 
-      <!-- [07] CART ACTIONS -->
-      <div id="cart-actions">
-        <button id="continue-btn" onclick="continueShopping()">&larr; Continue Shopping</button>
-        <button id="clear-btn" onclick="clearCart()">Clear Cart</button>
-      </div>
-    </aside>
+      <!-- Bottom Row: Coupon | Totals -->
+      <div class="cart-bottom-row">
+
+        <!-- Coupon -->
+        <div class="coupon-box">
+          <h3>Apply Coupon</h3>
+          <div class="coupon-input-row">
+            <input
+              type="text"
+              id="coupon-input"
+              placeholder="Enter coupon code"
+              autocomplete="off"
+            />
+            <button id="btn-apply-coupon" class="btn-primary">Apply</button>
+          </div>
+          <p id="coupon-msg" class="coupon-msg"></p>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+          <h3>Cart Totals</h3>
+          <table class="summary-table">
+            <tr>
+              <td>Subtotal</td>
+              <td id="summary-subtotal">$0.00</td>
+            </tr>
+            <tr>
+              <td>Discount</td>
+              <td id="summary-discount" class="discount-cell">— $0.00</td>
+            </tr>
+            <tr>
+              <td>Shipping</td>
+              <td id="summary-shipping">Free</td>
+            </tr>
+            <tr class="total-row">
+              <td><strong>Total</strong></td>
+              <td id="summary-total"><strong>$0.00</strong></td>
+            </tr>
+          </table>
+          <button id="btn-checkout" class="btn-checkout">Proceed to Checkout</button>
+        </div>
+
+      </div><!-- /.cart-bottom-row -->
+    </div><!-- /#cart-content -->
 
   </main>
 
-  <!-- [08] UPSELL SECTION -->
-  <section id="upsell-section">
-    <h2>You may also like</h2>
-    <div id="upsell-grid" class="products-grid"></div>
-  </section>
-
-  <!-- [09] TRUST BADGES -->
-  <footer id="trust-badges">
-    <div class="trust-item">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-      <span>Secure Checkout</span>
+  <!-- ═══════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
+  <footer class="kiki-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <img src="../images/kiki-logo.webp" alt="Kiki Logo" class="footer-logo" />
+        <p class="footer-tagline">THE BEST E-COMMERCE PLATFORM</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="../kiki.html">Home</a>
+        <a href="#">Shop</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>My Account</h4>
+        <a href="../account-info.html">My Account</a>
+        <a href="cart.html">View Cart</a>
+        <a href="#">Track My Order</a>
+        <a href="#">Help</a>
+      </div>
     </div>
-    <div class="trust-item">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-      <span>Free Shipping Over $50</span>
-    </div>
-    <div class="trust-item">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-      <span>Easy Returns</span>
+    <div class="footer-copy">
+      <p>© 2024 KIKI E-Commerce. All rights reserved.</p>
     </div>
   </footer>
 
-  <!-- [10] EMPTY CART STATE (hidden by default) -->
-  <div id="empty-cart-state" class="hidden">
-    <img src="/assets/empty-cart.svg" alt="Empty Cart" />
-    <h2>Your cart is empty!</h2>
-    <p>Looks like you haven't added anything yet.</p>
-    <a href="../kiki.html" class="shop-link">Browse Products &rarr;</a>
-  </div>
+  <!-- ═══════════════════════════════════════
+       SCRIPTS  (ES Modules)
+  ════════════════════════════════════════ -->
+  <script type="module" src="cart.js"></script>
 
-  <!-- [11] TOAST NOTIFICATION -->
-  <div id="toast" class="toast hidden"></div>
-
-  <!-- SCRIPTS -->
-  <script src="cart-state.js"></script>
-  <script src="cart-api.js"></script>
-  <script src="cart.js"></script>
 </body>
 </html>

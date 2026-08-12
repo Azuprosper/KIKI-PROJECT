@@ -1,120 +1,105 @@
-const API_BASE = '/api';
+/* ════════════════════════════════════════════
+   KIKI — CART API LAYER
+   All fetch() calls → backend endpoints
+════════════════════════════════════════════ */
 
-function getToken() {
-  return localStorage.getItem('auth_token') || null;
-}
+const BASE_URL = "https://kebab-rule-blandness.ngrok-free.dev";
 
-function authHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${getToken()}`
+/* ── Shared fetch wrapper ── */
+async function request(endpoint, options = {}) {
+  const url = `${BASE_URL}${endpoint}`;
+
+  const defaultHeaders = {
+    "Content-Type": "application/json",
+    // ngrok tunnels require this header to bypass the browser warning page
+    "ngrok-skip-browser-warning": "true",
   };
+
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...defaultHeaders,
+      ...(options.headers || {}),
+    },
+  });
+
+  // Surface server errors as thrown Error objects
+  if (!response.ok) {
+    let message = `HTTP ${response.status}`;
+    try {
+      const errBody = await response.json();
+      message = errBody?.detail || errBody?.message || message;
+    } catch {
+      /* body not JSON — keep generic message */
+    }
+    throw new Error(message);
+  }
+
+  // 204 No Content → return null
+  if (response.status === 204) return null;
+
+  return response.json();
 }
 
-window.CartAPI = {
-  async fetchCartFromServer() {
-    const token = getToken();
-    if (!token) {
-      window.location.href = '../login.html?redirect=/cart';
-      return;
-    }
+/* ════════════════════════════════════════════
+   API HANDLERS
+════════════════════════════════════════════ */
 
-    const res = await fetch(`${API_BASE}/cart`, {
-      headers: authHeaders()
-    });
+/**
+ * GET /api/cart
+ * Fetch the full cart from the server.
+ * @returns {Promise<{ items: Array }>}
+ */
+export async function fetchCartFromServer() {
+  return request("/api/cart", { method: "GET" });
+}
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch cart');
-    }
+/**
+ * POST /api/cart/items
+ * Add a new item to the server cart.
+ * @param {{ product_id: string|number, quantity: number }} item
+ * @returns {Promise<object>}
+ */
+export async function addToCart(item) {
+  return request("/api/cart/items", {
+    method: "POST",
+    body: JSON.stringify(item),
+  });
+}
 
-    const data = await res.json();
-    Object.assign(cartState, data);
-    saveCartState();
-    renderCartItems();
-  },
+/**
+ * PATCH /api/cart/items/:id
+ * Update the quantity of an existing cart item.
+ * @param {string|number} id
+ * @param {number} quantity
+ * @returns {Promise<object>}
+ */
+export async function updateQty(id, quantity) {
+  return request(`/api/cart/items/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ quantity }),
+  });
+}
 
-  async submitCart() {
-    const token = getToken();
-    if (!token) {
-      window.location.href = '../login.html?redirect=/cart';
-      return;
-    }
+/**
+ * DELETE /api/cart/items/:id
+ * Remove an item from the server cart.
+ * @param {string|number} id
+ * @returns {Promise<null>}
+ */
+export async function removeFromCart(id) {
+  return request(`/api/cart/items/${id}`, { method: "DELETE" });
+}
 
-    const payload = {
-      items: cartState.items,
-      coupon: cartState.coupon || '',
-      discount: cartState.discount || 0
-    };
-
-    const res = await fetch(`${API_BASE}/cart/checkout`, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to submit cart');
-    }
-
-    return await res.json();
-  },
-
-  async addItem(productId, quantity) {
-    const token = getToken();
-    if (!token) {
-      window.location.href = '../login.html?redirect=/cart';
-      return;
-    }
-
-    const res = await fetch(`${API_BASE}/cart/items`, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({ productId, quantity })
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to add item');
-    }
-
-    return await res.json();
-  },
-
-  async updateItem(productId, quantity) {
-    const token = getToken();
-    if (!token) {
-      window.location.href = '../login.html?redirect=/cart';
-      return;
-    }
-
-    const res = await fetch(`${API_BASE}/cart/items/${productId}`, {
-      method: 'PATCH',
-      headers: authHeaders(),
-      body: JSON.stringify({ quantity })
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to update item');
-    }
-
-    return await res.json();
-  },
-
-  async removeItem(productId) {
-    const token = getToken();
-    if (!token) {
-      window.location.href = '../login.html?redirect=/cart';
-      return;
-    }
-
-    const res = await fetch(`${API_BASE}/cart/items/${productId}`, {
-      method: 'DELETE',
-      headers: authHeaders()
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to remove item');
-    }
-
-    return await res.json();
-  }
-};
+/**
+ * POST /api/cart/checkout
+ * Submit the cart for checkout.
+ * @param {{ coupon?: string }} payload
+ * @returns {Promise<object>}
+ */
+export async function submitCart(payload = {}) {
+  return request("/api/cart/checkout", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
