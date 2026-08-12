@@ -112,33 +112,30 @@ def chat(request: ChatRequest):
         "products": matched_products
     }
 
-# 4. Image Search Route
 @app.post("/image-search")
 async def image_search(file: UploadFile = File(...)):
-    # Read binary bytes of uploaded image
+    # 1. Read binary bytes of uploaded image
     image_bytes = await file.read()
     
-    # Step A: Computer Vision model extracts description from image
+    # 2. Extract raw tags from MobileNet
     detected_description = extract_image_description(image_bytes)
     print(f"Vision Model Detected: {detected_description}")
     
-    # Step B: Find matching products in database based on detected vision tags
-    matched_products = find_relevant_products(detected_description)
-    
-    # Step C: Feed vision findings into Qwen2.5 LLM to generate natural response
+    # 3. Ask Qwen to evaluate the catalog directly
     system_prompt = (
-        "You are Kiki Store Assistant. A customer uploaded a picture of an item. "
-        "Our visual recognition model identified the image as containing: "
-        f"'{detected_description}'. "
-        "Use ONLY the following store inventory to suggest matching items to the user:\n"
+        "You are Kiki Store Assistant. A customer uploaded an image containing: "
+        f"'{detected_description}'.\n\n"
+        "Here is our entire store inventory:\n"
         f"{PRODUCTS_CONTEXT}\n\n"
-        "Be friendly and concise."
-        f"If non tell the user that it seems we don't currently have {detected_description} in the store"
+        "Task:\n"
+        "1. Select ONLY the TOP 1 or TOP 2 products from the inventory that best match the detected object.\n"
+        "2. If no items match closely, politely state that we do not have a direct match.\n"
+        "3. Do NOT list unrelated items like socks, towels, or kettles unless they directly match."
     )
     
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": f"I uploaded an image showing: {detected_description}. What matching items do you have in store?"}
+        {"role": "user", "content": "What matching items do you have in store for my image?"}
     ]
     
     text_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -148,16 +145,20 @@ async def image_search(file: UploadFile = File(...)):
         outputs = model.generate(
             **inputs,
             max_new_tokens=100,
-            temperature=0.3,
+            temperature=0.2, # Lower temperature forces more precise selection
             do_sample=True
         )
         
-    generated_text = tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)
+    generated_text = tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True) 
+    # 4. Filter the JSON payload returned to the UI so product cards match Qwen's answer
+    matched_products = [
+        p for p in PRODUCTS 
+        if p["name"].lower() in generated_text.lower() or p["description"].lower() in generated_text.lower()
+    ]
     
     return {
         "reply": generated_text,
-        "products": matched_products
+        "products": matched_products[:2] # Top 2 cards maximum
     }
-
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
