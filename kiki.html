@@ -15,6 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/header.css">
     <link rel="stylesheet" href="styles/kiki.css">
+    <link rel="stylesheet" href="styles/chatbot.css">
   </head>
   <body>
 
@@ -35,13 +36,13 @@
           <div id="account-dropdown" class="dropdown-menu">
             <ul class="dropdown-links">
                 <li><a href="account-info.html" >My Account</a></li>
-                <li><a href="login.html">LogOut</a></li>
+                <li><button  id="logout-btn"class="dropdown-logout-btn">LogOut</button></li>
             </ul>
         </div>
       </div>
         
 
-       <a href="" class="cart-link">
+       <a href="#" class="cart-link">
             <img src="images/icons/cart-icon.png" class="cart-icon">
             <span class="cart-quantity">0</span>
             <span class="cart-text">Cart</span>
@@ -64,40 +65,31 @@
   </div>
 
 
-  <!-- The product lists begins here -->
+  <!-- The product lists begins here{Azu} -->
 
   <div class="products-grid" id="products-container">
-    <!-- Product 1 -->
-    <!-- <div class="product-card">
-        <img src="images/basketball.webp" alt="Basketball" class="product-image">
-        <div class="product-name">Intermediate Size Basketball</div>
-        <div class="product-price">$20.95</div>
-        <button class="add-to-cart-btn">Add to Cart</button>
-    </div> -->
-
-    <!-- Product 2 -->
-    <!-- <div class="product-card">
-        <img src="images/toaster.webp" alt="Toaster" class="product-image">
-        <div class="product-name">2 Slot Toaster - Black</div>
-        <div class="product-price">$18.99</div>
-        <button class="add-to-cart-btn">Add to Cart</button>
-    </div> -->
+   
 </div>
 
 
   <script type="module" src="scripts/kiki.js"></script>
 
 
-<!-- Floating Chatbot Widget -->
+
+  <!-- floating chatbox {Azu} -->
+
 <div id="chatbot-container">
   <!-- Chat Button Toggle -->
-  <button id="chat-toggle-btn" onclick="toggleChat()">💬 Chat & Search</button>
+  <button id="chat-toggle-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 10.5C2 9.72921 2.01346 8.97679 2.03909 8.2503C2.12282 5.87683 2.16469 4.69009 3.13007 3.71745C4.09545 2.74481 5.3157 2.6926 7.7562 2.58819C9.09517 2.5309 10.5209 2.5 12 2.5C13.4791 2.5 14.9048 2.5309 16.2438 2.58819C18.6843 2.6926 19.9046 2.74481 20.8699 3.71745C21.8353 4.69009 21.8772 5.87683 21.9609 8.2503C21.9865 8.97679 22 9.72921 22 10.5C22 11.2708 21.9865 12.0232 21.9609 12.7497C21.8772 15.1232 21.8353 16.3099 20.8699 17.2826C19.9046 18.2552 18.6843 18.3074 16.2437 18.4118C15.5098 18.4432 14.7498 18.4667 13.9693 18.4815C13.2282 18.4955 12.8576 18.5026 12.532 18.6266C12.2064 18.7506 11.9325 18.9855 11.3845 19.4553L9.20503 21.3242C9.07273 21.4376 8.90419 21.5 8.72991 21.5C8.32679 21.5 8 21.1732 8 20.7701V18.4219C7.91842 18.4186 7.83715 18.4153 7.75619 18.4118C5.31569 18.3074 4.09545 18.2552 3.13007 17.2825C2.16469 16.3099 2.12282 15.1232 2.03909 12.7497C2.01346 12.0232 2 11.2708 2 10.5Z"></path>
+    <path d="M12.1257 10.5H12.0007M8.125 10.5H8M16.125 10.5H16M12.2507 10.5C12.2507 10.6381 12.1388 10.75 12.0007 10.75C11.8627 10.75 11.7507 10.6381 11.7507 10.5C11.7507 10.3619 11.8627 10.25 12.0007 10.25C12.1388 10.25 12.2507 10.3619 12.2507 10.5ZM8.25 10.5C8.25 10.6381 8.13807 10.75 8 10.75C7.86193 10.75 7.75 10.6381 7.75 10.5C7.75 10.3619 7.86193 10.25 8 10.25C8.13807 10.25 8.25 10.3619 8.25 10.5ZM16.25 10.5C16.25 10.6381 16.1381 10.75 16 10.75C15.8619 10.75 15.75 10.6381 15.75 10.5C15.75 10.3619 15.8619 10.25 16 10.25C16.1381 10.25 16.25 10.3619 16.25 10.5Z"></path>
+</svg> Chat & Search</button>
 
   <!-- Chat Window -->
   <div id="chat-window" class="chat-hidden">
     <div class="chat-header">
-      <span>Kiki Store Assistant</span>
-      <button onclick="toggleChat()" class="close-btn">&times;</button>
+      <span>Kiki Assistant</span>
+      <button id="chat-close-btn" class="close-btn">&times;</button>
     </div>
 
     <!-- Messages Container -->
@@ -108,186 +100,19 @@
     </div>
 
     <!-- Input Form -->
-    <form id="chat-form" onsubmit="handleSend(event)" class="chat-input-area">
-      <!-- Hidden file input triggered by camera icon -->
-      <input type="file" id="image-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)" />
+    <form id="chat-form" class="chat-input-area">
+      <!-- Hidden triggered camera icon -->
+      <input type="file" id="image-input" accept="image/*" style="display: none;" />
       
-      <button type="button" class="icon-btn" onclick="document.getElementById('image-input').click()" title="Upload Image">📷</button>
+      <button type="button" class="icon-btn"  id="image-upload-trigger" title="Upload Image"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22.0002 8.99998V15C22.0002 17.8284 22.0002 19.2426 21.1215 20.1213C20.2428 21 18.8286 21 16.0002 21H8.00018C5.17176 21 3.75754 21 2.87886 20.1213C2.00018 19.2426 2.00018 17.8284 2.00018 15V11.0537C2.00018 10.0736 2.00018 9.58356 2.1136 9.18288C2.39734 8.18054 3.18074 7.39714 4.18307 7.11341C4.58376 6.99998 5.07379 6.99998 6.05387 6.99998C6.41985 6.99998 6.60284 6.99998 6.77329 6.97027C7.19563 6.89665 7.58313 6.68926 7.87867 6.37869C7.99794 6.25335 8.29718 5.8045 8.50018 5.49998C8.89656 4.90543 9.09474 4.60815 9.36568 4.40365C9.53113 4.27877 9.71499 4.18038 9.91067 4.11198C10.2311 3.99998 10.5884 3.99998 11.303 3.99998H13.0002"></path>
+    <path d="M16.0002 13.5C16.0002 15.7091 14.2093 17.5 12.0002 17.5C9.79104 17.5 8.00018 15.7091 8.00018 13.5C8.00018 11.2908 9.79104 9.49998 12.0002 9.49998C14.2093 9.49998 16.0002 11.2908 16.0002 13.5Z"></path>
+    <path d="M16.0002 5.49998H21.0002M18.5002 7.99998V2.99998"></path>
+</svg></button>
       <input type="text" id="user-input" placeholder="Type a message or search..." autocomplete="off" />
       <button type="submit" class="send-btn">Send</button>
     </form>
   </div>
 </div>
 
-<!-- Chatbot Stylesheet -->
-<style>
-  #chatbot-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 9999;
-    font-family: Arial, sans-serif;
-  }
-  #chat-toggle-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  }
-  #chat-window {
-    width: 350px;
-    height: 480px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    margin-bottom: 10px;
-  }
-  .chat-hidden { display: none !important; }
-  .chat-header {
-    background: #007bff;
-    color: white;
-    padding: 12px 16px;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .close-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
-  .chat-messages {
-    flex: 1;
-    padding: 12px;
-    overflow-y: auto;
-    background: #f8f9fa;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .message {
-    max-width: 80%;
-    padding: 8px 12px;
-    border-radius: 12px;
-    font-size: 14px;
-    line-height: 1.4;
-  }
-  .bot-message { background: #e9ecef; align-self: flex-start; color: #333; }
-  .user-message { background: #007bff; color: white; align-self: flex-end; }
-  .product-card {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 8px;
-    margin-top: 6px;
-    font-size: 12px;
-  }
-  .product-card strong { color: #007bff; display: block; }
-  .chat-input-area {
-    display: flex;
-    padding: 8px;
-    background: white;
-    border-top: 1px solid #ddd;
-    gap: 6px;
-  }
-  .chat-input-area input[type="text"] {
-    flex: 1;
-    border: 1px solid #ccc;
-    padding: 8px;
-    border-radius: 20px;
-    outline: none;
-  }
-  .icon-btn, .send-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 15px;
-    cursor: pointer;
-  }
-  .icon-btn { background: #6c757d; }
-</style>
-
   </body>
-<script>
-  const API_URL = "http://127.0.0.1:8000";
-
-  function toggleChat() {
-    const window = document.getElementById("chat-window");
-    window.classList.toggle("chat-hidden");
-  }
-
-  function appendMessage(sender, text, products = []) {
-    const container = document.getElementById("chat-messages");
-    const msgDiv = document.createElement("div");
-    msgDiv.className = `message ${sender}-message`;
-    msgDiv.innerHTML = text;
-
-    // If products were returned, display product cards in chat
-    if (products && products.length > 0) {
-      products.forEach(p => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <strong>${p.name} - $${p.price}</strong>
-          <div>${p.description}</div>
-          <small>In Stock: ${p.stock}</small>
-        `;
-        msgDiv.appendChild(card);
-      });
-    }
-
-    container.appendChild(msgDiv);
-    container.scrollTop = container.scrollHeight;
-  }
-
-  // Handle Text Chat Submission
-  async function handleSend(event) {
-    event.preventDefault();
-    const input = document.getElementById("user-input");
-    const text = input.value.trim();
-    if (!text) return;
-
-    appendMessage("user", text);
-    input.value = "";
-
-    try {
-      const res = await fetch(`${API_URL}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text })
-      });
-      const data = await res.json();
-      appendMessage("bot", data.reply, data.products);
-    } catch (err) {
-      appendMessage("bot", "Error connecting to server. Make sure Python backend is running!");
-    }
-  }
-
-  // Handle Image Upload & Search
-  async function handleImageUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    appendMessage("user", `📷 Uploaded image: <em>${file.name}</em>`);
-
-    const formData = new FormData();
-    formData.append("file", file);
-    appendMessage("bot", "<em>Thinking...</em>");         
-
-    try {
-      const res = await fetch(`${API_URL}/image-search`, {
-        method: "POST",
-        body: formData
-      });
-      const data = await res.json();
-      appendMessage("bot", data.reply, data.products);
-    } catch (err) {
-      appendMessage("bot", "Failed to analyze image.");
-    }
-  }
-</script>

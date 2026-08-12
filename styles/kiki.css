@@ -82,10 +82,10 @@ body {
 }
 
 .product-name {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
 }
 
 .product-price {
@@ -107,4 +107,15 @@ body {
 
 .add-to-cart-btn:hover {
     opacity: 0.8;
+}
+/* log out btn{Azu} */
+.dropdown-logout-btn {
+    background: none;
+    border: none;
+    color: black;
+    font: inherit;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    padding: 0; 
 }

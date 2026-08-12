@@ -1,4 +1,5 @@
-import { API_URL, loadProducts } from "./products.js";
+import { API_URL as PRODUCT_API_URL, loadProducts } from "./products.js";
+import { API_URL as CHAT_API_URL, toggleChat, appendMessage, handleSend, handleImageUpload } from "./chatbot.js";
 
 loadProducts();
 
@@ -31,12 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Trigger when clicking the search button
     if (searchBtn) {
         searchBtn.addEventListener('click', performSearch);
     }
 
-    // Trigger when pressing "Enter" inside the input field
     if (searchInput) {
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -45,3 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+ // when logging out {Azu}
+const logoutBtn = document.getElementById('logout-btn');
+
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('authToken');
+        
+        // Redirect to the login page{Azu}
+        window.location.href = 'login.html';
+    });
+}
