@@ -1,8 +1,18 @@
 export const API_URL = "https://cut-unjustly-ellipse.ngrok-free.dev";
 
 export function toggleChat() {
-  const window = document.getElementById("chat-window");
-  window.classList.toggle("chat-hidden");
+  const chatWindow = document.getElementById("chat-window");
+  const toggleBtn = document.getElementById("chat-toggle-btn");
+  
+  chatWindow.classList.toggle("chat-hidden");
+  
+  // If chat window is open (hidden class is removed), hide the toggle button.
+  // If chat window is closed (hidden class is present), show the toggle button.
+  if (chatWindow.classList.contains("chat-hidden")) {
+    toggleBtn.style.display = "flex"; 
+  } else {
+    toggleBtn.style.display = "none";
+  }
 }
 
 export function appendMessage(sender, text, products = []) {
