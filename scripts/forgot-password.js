@@ -34,10 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Password Reset Response / Token Details:", data);
                 
                 // Extract message whether data is a JSON object or a raw string
-                const serverMessage = typeof data === 'object' ? (data?.message || "Success") : data;
+                const serverMessage = typeof data === 'object' ? (data?.message || "If an Account exist for the email, reset link has been sent") : data;
 
                 if (errorMsg) {
-                    errorMsg.style.color = "green"; 
+                    errorMsg.style.color = "black"; 
                     errorMsg.textContent = serverMessage; 
                 }
             } else {

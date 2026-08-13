@@ -108,4 +108,16 @@ document.addEventListener("DOMContentLoaded", () => {
     imageTrigger.addEventListener("click", () => imageInput.click());
     imageInput.addEventListener("change", handleImageUpload);
   }
+
+  // Close the chat window if the user clicks anywhere outside of it
+  window.addEventListener('click', (e) => {
+    const chatWindow = document.getElementById("chat-window");
+    const chatbotContainer = document.getElementById("chatbot-container");
+
+    if (chatWindow && !chatWindow.classList.contains("chat-hidden")) {
+      if (!chatbotContainer.contains(e.target)) {
+        toggleChat();
+      }
+    }
+  });
 });
