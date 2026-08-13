@@ -119,7 +119,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def find_relevant_products_vector(query: str, top_k: int = 3, min_similarity: float = 0.20):
+def find_relevant_products_vector(query: str, top_k: int = 3, min_similarity: float = 0.50):
     if product_embeddings is None or len(PRODUCTS) == 0:
         return []
         
@@ -128,6 +128,9 @@ def find_relevant_products_vector(query: str, top_k: int = 3, min_similarity: fl
     
     top_k = min(top_k, len(PRODUCTS))
     top_results = torch.topk(similarity_scores, k=top_k)
+    
+    # Only return products if their vector distance is close enough to the query
+
     
     matches = []
     for score, idx in zip(top_results.values, top_results.indices):
@@ -156,10 +159,14 @@ def chat(request: ChatRequest):
     matched_products = find_relevant_products_vector(request.message, top_k=3)
     
     system_prompt = (
-        "You are Kiki Store Assistant, a helpful sales associate. "
+        "You are Kiki Store Assistant, a helpful sales associate.\n"
         "Use ONLY the following product inventory to answer user inquiries:\n"
         f"{PRODUCTS_CONTEXT}\n\n"
-        "Be friendly, concise, and mention prices when relevant."
+        "Guidelines:\n"
+        "- Be friendly, natural, and concise.\n"
+        "- If stock levels are requested, use the exact stock number provided in the context.\n"
+        "- Do NOT invent item quantities or confuse array match counts with stock levels.\n"
+        "- Mention relevant prices accurately."
     )
     
     messages = [
@@ -209,3 +216,8 @@ async def image_search(file: UploadFile = File(...)):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
+    
+    
+    
+    
+    ## ngrok http --url=cut-unjustly-ellipse.ngrok-free.dev 8000
