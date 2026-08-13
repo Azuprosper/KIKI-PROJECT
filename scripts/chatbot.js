@@ -16,10 +16,12 @@ export function appendMessage(sender, text, products = []) {
     products.forEach(p => {
       const card = document.createElement("div");
       card.className = "product-card";
+      
+      // 👇 UPDATED HERE: Fallback check for stockQuantity or N/A
       card.innerHTML = `
         <strong>${p.name} - $${p.price}</strong>
         <div>${p.description}</div>
-        <small>In Stock: ${p.stock}</small>
+        <small>In Stock: ${p.stock ?? p.stockQuantity ?? 'N/A'}</small>
       `;
       msgDiv.appendChild(card);
     });
