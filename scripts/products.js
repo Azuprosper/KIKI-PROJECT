@@ -1,48 +1,6 @@
 // const BASE_URL = 'http://localhost:4200';
 export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products?size=100';
 
-const CART_KEY = 'cart';
-
-function getCart() {
-  try {
-    const raw = localStorage.getItem(CART_KEY);
-    if (!raw) return { items: [] };
-    return JSON.parse(raw);
-  } catch (e) {
-    return { items: [] };
-  }
-}
-
-function saveCart(cart) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-}
-
-function updateCartBadge() {
-  const cart = getCart();
-  const count = cart.items.reduce((sum, item) => sum + item.qty, 0);
-  document.querySelectorAll('.cart-quantity').forEach(el => el.textContent = count);
-}
-
-function addToCart(product) {
-  const cart = getCart();
-  const existing = cart.items.find(i => i.id === product.id);
-  if (existing) {
-    existing.qty++;
-  } else {
-    cart.items.push({
-      id: product.id,
-      name: product.name,
-      price: parseFloat(product.price),
-      image: product.imageUrl || '',
-      sku: product.sku || `SKU-${product.id}`,
-      variant: product.variant || 'Default',
-      qty: 1
-    });
-  }
-  saveCart(cart);
-  updateCartBadge();
-}
-
 export async function loadProducts(searchKeyword = ''){
   try {
     let url = API_URL;

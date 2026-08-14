@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // alert("Login successful!");
                 
                 // Redirect back to your main shop page
-                window.location.href = 'kiki.html';
+                window.location.href = 'index.html';
             } else {
                 // If credentials are wrong or server rejects it
                 const errorBody = await response.json().catch(() => null);
