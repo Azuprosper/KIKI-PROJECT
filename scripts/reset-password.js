@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Validate the token/URL as soon as the page loads
 
     if (!token) {
-        if (generalError) generalError.textContent = "Missing reset token in URL.";
+        // if (generalError) generalError.textContent = "Missing reset token in URL.";
         if (confirmBtn) confirmBtn.disabled = true;
     } else {
         try {
