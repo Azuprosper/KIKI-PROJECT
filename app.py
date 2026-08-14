@@ -10,6 +10,9 @@ import uvicorn
 import cv_model
 from cv_model import extract_image_description
 from contextlib import asynccontextmanager
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 JAVA_API_URL = "https://kebab-rule-blandness.ngrok-free.dev/api/products?size=100"
 
@@ -85,7 +88,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def find_relevant_products_vector(query: str, top_k: int = 3, min_similarity: float = 0.50):
+def find_relevant_products_vector(query: str, top_k: int = 3, min_similarity: float = 0.3):
     if product_embeddings is None or len(PRODUCTS) == 0:
         return []
         
@@ -126,20 +129,21 @@ def chat(request: ChatRequest):
     else:
         context_str = "No specific products matched this query."
 
-    system_prompt = (
-        "You are Kiki Store Assistant, a helpful sales associate.\n"
-        "Use ONLY the following matching store items to answer customer inquiries:\n"
-        f"{context_str}\n\n"
-        "Instructions:\n"
-        "- Be friendly, natural, and concise.\n"
-        "- Confirm we have the item in stock if it appears in the list above.\n"
-        "- Explicitly mention the price and exact stock count when relevant."
-    )
     
+    system_prompt = (
+        "You are Kiki Store Assistant, a sales associate helping a customer.\n"
+        "Your job is to DIRECTLY answer the customer using ONLY the inventory below:\n"
+        f"{context_str}\n\n"
+        "Rules:\n"
+        "- Never ask the customer if an item exists—tell them directly!\n"
+        "- Confirm item availability, price, and stock warmly and concisely."
+    )
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": request.message}
     ]
+    
+    print(f"messages: {messages}")
     
     text_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer(text_prompt, return_tensors="pt").to(model.device)
@@ -164,6 +168,7 @@ async def image_search(file: UploadFile = File(...)):
     image_bytes = await file.read()
     
     detected_description = extract_image_description(image_bytes)
+    print(f"vison model detected: {detected_description}")
     matched_products = find_relevant_products_vector(detected_description, top_k=2)
     
     clean_tags = detected_description.replace("_", " ")
