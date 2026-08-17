@@ -1,5 +1,28 @@
 const ACCOUNT_INFO_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/users/me'; 
 
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // KIKI LOGO ROUTING LOGIC
+    const logoLink = document.getElementById('kiki-logo-link');
+
+    if (logoLink) {
+        const userRole = localStorage.getItem('userRole');
+        // Ensure it is uppercase to match exactly
+        const roleString = userRole ? userRole.toUpperCase() : 'CUSTOMER';
+        if (roleString === 'ORGANIZATION') {
+            // Reroute organizations to their dashboard
+            logoLink.href = 'org-dashboard.html';
+        } else if (roleString === 'ADMIN') {
+            // Reroute admins to the admin panel
+            logoLink.href = 'admin-dashboard.html';
+        } else {
+            logoLink.href = 'index.html';
+        }
+    }
+
+    // ... the rest of your account page logic ...
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
     const firstNameSpan = document.getElementById('info-firstname');
     const lastNameSpan = document.getElementById('info-lastname');

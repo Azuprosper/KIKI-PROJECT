@@ -1,4 +1,3 @@
-// Define your backend endpoint constant here
 const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/organizations/register';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,39 +8,28 @@ document.addEventListener('DOMContentLoaded', () => {
         registerButton.addEventListener('click', async (e) => {
             e.preventDefault();
 
-           // Clear all previous errors before a new attempt
-            clearAllErrors();
-
-            const brandName = document.getElementById('org-brand-name').value.trim();
-            const brandDescription = document.getElementById('org-description').value.trim();
-            const firstName = document.getElementById('register-firstname').value.trim();
-            const lastName = document.getElementById('register-lastname').value.trim();
-            const username = document.getElementById('register-username').value.trim();
-            const email = document.getElementById('register-email').value.trim();
-            const phone = document.getElementById('register-phone').value.trim();
-            const password = document.getElementById('register-password').value.trim();
+            if (generalError) generalError.textContent = '';
 
             const payload = {
-                orgName,
-                orgDescription,
-                contactFirstName,
-                contactLastName,
-                username,
-                email,
-                phoneNumber,
-                password,
-                role: 'ORGANIZATION'
+                orgName: document.getElementById('org-brand-name').value.trim(),
+                orgDescription: document.getElementById('org-description').value.trim(),
+                contactFirstName: document.getElementById('register-firstname').value.trim(),
+                contactLastName: document.getElementById('register-lastname').value.trim(),
+                username: document.getElementById('register-username').value.trim(),
+                email: document.getElementById('register-email').value.trim(),
+                phoneNumber: document.getElementById('register-phone').value.trim(),
+                password: document.getElementById('register-password').value.trim()
             };
 
             try {
                 registerButton.disabled = true;
                 registerButton.textContent = 'Registering Organization...';
 
-                // Pass the constant variable straight into fetch
                 const response = await fetch(API_URL, {
-                    method: 'POST',
+                    method: 'POST', // Must be POST
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true' // Prevents ngrok from blocking JSON payload requests
                     },
                     body: JSON.stringify(payload)
                 });
@@ -50,10 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = responseText ? JSON.parse(responseText) : {};
 
                 if (!response.ok) {
-                  throw new Error(data.message || 'Registration failed.');
+                    throw new Error(data.message || 'Registration failed.');
                 }
 
-                window.location.href = 'org-login.html';
+                window.location.href = 'login.html';
 
             } catch (error) {
                 if (generalError) {

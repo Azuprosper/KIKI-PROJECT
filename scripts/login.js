@@ -25,22 +25,39 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                // If login is successful, parse the response if needed
+                // If login is successful, parse the response
                 const data = await response.json().catch(() => ({}));
 
-                localStorage.setItem("token", data.token)
+                // 1. Save the token and role to localStorage
+                localStorage.setItem("token", data.token);
+                if (data.role) {
+                    localStorage.setItem('userRole', data.role);
+                }
                 
-                // alert("Login successful!");
-                
-                // Redirect back to your main shop page
-                window.location.href = 'index.html';
+                // --- 2. THE TRAFFIC COP: Read the role and redirect ---
+                // (We use .toUpperCase() to ensure it matches no matter how the backend formats it)
+                const userRole = data.role ? data.role.toUpperCase() : 'CUSTOMER'; 
+
+                if (userRole === 'ORGANIZATION') {
+                    // Send sellers to their dedicated dashboard
+                    window.location.href = 'org-dashboard.html';
+                } else if (userRole === 'ADMIN') {
+                    // Send admins to the admin panel
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    // Default fallback: Send end-users/customers to the main homepage
+                    window.location.href = 'index.html';
+                }
+
             } else {
                 // If credentials are wrong or server rejects it
                 const errorBody = await response.json().catch(() => null);
-      const serverMessage = errorBody?.message || errorBody?.password;
-                const message = document.getElementById('login-error')
-                message.textContent = serverMessage;
+                const serverMessage = errorBody?.message || errorBody?.password;
+                const message = document.getElementById('login-error');
                 
+                if (message) {
+                    message.textContent = serverMessage || 'Login failed. Please check your credentials.';
+                }
             }
 
         } catch (error) {
