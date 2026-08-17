@@ -95,6 +95,20 @@ body {
     margin-bottom: 10px;
 }
 
+.product-name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #000;
+    margin-bottom: 10px;
+}
+
+.product-orgName {
+    font-weight: bold;
+    font-size: 16px;
+    color: #000;
+    margin-bottom: 10px;
+}
+
 .add-to-cart-btn {
     background-color: rgb(26, 84, 191);
     color: white;

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Register as Organization - Kiki</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/header.css">
+    <link rel="stylesheet" href="styles/register-login.css">
+  </head>
+  <body>
+
+    <header>
+        <div class="logo"><a href="index.html"><img src="images/kiki-logo.webp" alt="Kiki Logo"></a></div>
+        <div class="tagline">THE BEST E-COMMERCE PLATFORM</div>
+        <div class="user-actions"></div>
+    </header>
+
+    <div class="register-margin">
+        <div class="my-account">Sell on Kiki</div>
+
+        <div class="form-section">
+          <h2>Organization Registration</h2>
+          
+          <label class="labels">Brand / Company Name</label>
+          <input type="text" id="org-brand-name" class="placeholders" placeholder="Enter your business name">
+          <div class="error-message" id="js-brand-name"></div>
+
+          <label class="labels">Brand / Company Description</label>
+          <textarea id="org-description" class="description" placeholder="Tell customers what your brand offers..." rows="4" style="resize: vertical;"></textarea>
+          <div class="error-message" id="js-org-description"></div>
+
+          <label class="labels">First Name</label>
+          <input type="text" id="register-firstname" class="placeholders">
+          <div class="error-message" id="js-firstname"></div>
+
+          <label class="labels">Last Name</label>
+          <input type="text" id="register-lastname" class="placeholders">
+          <div class="error-message" id="js-lastname"></div>
+
+          <label class="labels">Username</label>
+          <input type="text" id="register-username" class="placeholders">
+          <div class="error-message" id="js-username"></div>
+
+          <label class="labels">Email Address</label>
+          <input type="email" id="register-email" class="placeholders">
+          <div class="error-message" id="js-email"></div>
+
+          <label class="labels">Phone Number</label>
+          <input type="tel" id="register-phone" class="placeholders" placeholder="0800 000 0000" required>
+          <div class="error-message" id="js-number"></div>
+
+          <label class="labels">Password</label>
+          <input type="password" id="register-password" class="placeholders">
+          <div class="error-message" id="js-password"></div>
+
+          <p>By registering your organization, you agree to Kiki's vendor terms and <a class="privacy-link" href="privacypolicy.html">privacy policy</a>.</p>
+          <button type="button" id="org-register-button" class="signin-buttons">Register Organization</button>
+          
+          <div>Already have an organization account? <a href="login.html" id="login-trigger">Log In</a></div>
+          <p id="register-error" class="error-message"></p>
+        </div>
+    </div>
+
+    <script src="scripts/org-register.js"></script>
+  </body>
+</html>

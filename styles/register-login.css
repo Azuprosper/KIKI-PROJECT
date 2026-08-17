@@ -17,6 +17,9 @@
 .placeholders{
   height: 35px;
 }
+.description{
+  height: 85px;
+}
 
 .labels{
   font-weight: bold;

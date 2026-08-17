@@ -1,0 +1,135 @@
+/* Empty Container */
+.dashboard-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 70vh;
+    text-align: center;
+}
+
+.dashboard-empty-state h2 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    color: darkslategray;
+}
+
+.dashboard-empty-state p {
+    margin: 0 0 25px 0;
+    color: gray;
+}
+
+.empty-icon {
+    margin-bottom: 15px;
+}
+
+.add-product-btn {
+    background-color: royalblue;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-product-btn:hover {
+    background-color: darkblue;
+}
+
+/* Modal Content */
+.modal-overlay {
+    display: none; 
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 15px; 
+    right: 15px;
+    background: none; 
+    border: none;
+    font-size: 22px; 
+    cursor: pointer;
+    color: dimgray;
+}
+
+.modal-subtitle {
+    color: gray;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.modal-submit-btn {
+    width: 100%;
+    background-color: royalblue;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* File Upload Styles */
+.file-upload-label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: darkslategray;
+    font-weight: 500;
+}
+
+.modal-file-input {
+    width: 100%;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: gray;
+}
+
+.image-preview-container {
+    display: none; /* Hidden until an image is selected */
+    text-align: center;
+    margin-bottom: 15px;
+    border: 1px dashed lightgray;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+#image-preview {
+    max-width: 100%;
+    max-height: 150px;
+    border-radius: 4px;
+    object-fit: contain;
+}
