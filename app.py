@@ -1,16 +1,23 @@
+import os
 import json
 import torch
 import requests
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from transformers import AutoModelForCausalLM, AutoTokenizer
 from sentence_transformers import SentenceTransformer, util
 import uvicorn
 import cv_model
 from cv_model import extract_image_description
 from contextlib import asynccontextmanager
 import urllib3
+from groq import Groq  # Make sure to run: pip install groq
+from admin_router import router as organization_router
+
+
+
+# Limit PyTorch to CPU threads suitable for a dual-core i7
+torch.set_num_threads(2)
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -23,10 +30,12 @@ product_embeddings = None
 print("Loading Embedding Model...")
 embedder = SentenceTransformer('all-MiniLM-L6-v2')
 
+# Initialize Groq client (Cloud API driver)
+groq_client = Groq(api_key="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")
+
 def update_embeddings_and_context():
     global PRODUCTS, product_embeddings
     
-    # Standardize field names from Java payload
     for p in PRODUCTS:
         p['stock'] = p.get('stockQuantity', p.get('quantity', 0))
     
@@ -49,11 +58,7 @@ def fetch_and_embed_products():
         response = requests.get(JAVA_API_URL, headers=headers, timeout=10)
         if response.status_code == 200:
             data = response.json()
-            if isinstance(data, dict) and "content" in data:
-                PRODUCTS = data["content"]
-            else:
-                PRODUCTS = data
-                
+            PRODUCTS = data["content"] if isinstance(data, dict) and "content" in data else data
             print(f"Successfully fetched {len(PRODUCTS)} live products from Java backend!")
             update_embeddings_and_context()
             return
@@ -64,9 +69,8 @@ def fetch_and_embed_products():
     PRODUCTS = [
         {"id": 2, "name": "Electric Kettle", "description": "Electric Glass and Steel Hot Tea Water Kettle - 1.7-Liter", "price": 29.99, "image_url": "images/products/electric-glass-and-steel-hot-water-kettle.webp", "stock": 50},
         {"id": 3, "name": "Coffee maker", "description": "Coffeemaker with Glass Carafe and Reusable Filter - 25 Oz", "price": 35.50, "image_url": "images/products/coffeemaker-with-glass-carafe-black.jpg", "stock": 50},
-        {"id": 5, "name": "Cotton Socks", "description": "Black and Gray Athletic Cotton Socks - 6 Pairs", "price": 12.00, "image_url": "images/products/athletic-cotton-socks-6-pairs.jpg", "stock": 36},
-        {"id": 11, "name": "Sneakers", "description": "Waterproof Knit Athletic Sneakers - Gray", "price": 55.00, "image_url": "images/products/knit-athletic-sneakers-gray.jpg", "stock": 30},
-        {"id": 13, "name": "Sandals", "description": "Womens Two Strap Buckle Sandals - Tan", "price": 24.99, "image_url": "images/products/women-beach-sandals.jpg", "stock": 15}
+        {"id": 4, "name": "Blender", "description": "Countertop Blender - 64oz, 1400 Watts", "price": 49.99, "image_url": "images/products/countertop-blender-64-oz.jpg", "stock": 50},
+        {"id": 5, "name": "Cotton Socks", "description": "Black and Gray Athletic Cotton Socks - 6 Pairs", "price": 12.00, "image_url": "images/products/athletic-cotton-socks-6-pairs.jpg", "stock": 36}
     ]
     update_embeddings_and_context()
 
@@ -77,8 +81,8 @@ async def lifespan(app: FastAPI):
     yield
     print("FastAPI Application Shutting Down...")
 
-# Yes, defining app after lifespan is standard FastAPI practice
 app = FastAPI(lifespan=lifespan)
+app.include_router(organization_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -105,22 +109,13 @@ def find_relevant_products_vector(query: str, top_k: int = 3, min_similarity: fl
             
     return matches
 
-MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForCausalLM.from_pretrained(
-    MODEL_NAME,
-    dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-    device_map="auto"
-)
-
 class ChatRequest(BaseModel):
     message: str
 
 @app.post("/chat")
-def chat(request: ChatRequest):
+async def chat(request: ChatRequest):
     matched_products = find_relevant_products_vector(request.message, top_k=3)
     
-    # Build context DYNAMICALLY using ONLY the matched items
     if matched_products:
         context_str = "\n".join([
             f"- {p.get('name')}: {p.get('description')} | Price: ${p.get('price')} | In Stock: {p.get('stock')}"
@@ -129,7 +124,6 @@ def chat(request: ChatRequest):
     else:
         context_str = "No specific products matched this query."
 
-    
     system_prompt = (
         "You are Kiki Store Assistant, a sales associate helping a customer.\n"
         "Your job is to DIRECTLY answer the customer using ONLY the inventory below:\n"
@@ -138,25 +132,21 @@ def chat(request: ChatRequest):
         "- Never ask the customer if an item exists—tell them directly!\n"
         "- Confirm item availability, price, and stock warmly and concisely."
     )
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": request.message}
-    ]
     
-    print(f"messages: {messages}")
-    
-    text_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    inputs = tokenizer(text_prompt, return_tensors="pt").to(model.device)
-    
-    with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=100,
-            temperature=0.3,
-            do_sample=True
+    try:
+        # Offload text generation to Cloud Groq API for sub-second speeds on laptop
+        response = groq_client.chat.completions.create(
+            model="openai/gpt-oss-120b", # Or qwen-2.5-0.5b-instruct
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": request.message}
+            ],
+            temperature=0.2,
+            max_tokens=150
         )
-    
-    generated_text = tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)
+        generated_text = response.choices[0].message.content
+    except Exception as e:
+        generated_text = f"I'm having trouble connecting right now. Details: {str(e)}"
     
     return {
         "reply": generated_text,
@@ -168,7 +158,6 @@ async def image_search(file: UploadFile = File(...)):
     image_bytes = await file.read()
     
     detected_description = extract_image_description(image_bytes)
-    print(f"vison model detected: {detected_description}")
     matched_products = find_relevant_products_vector(detected_description, top_k=2)
     
     clean_tags = detected_description.replace("_", " ")
@@ -176,12 +165,12 @@ async def image_search(file: UploadFile = File(...)):
         reply_text = f"I scanned your image ({clean_tags}) and found these matching items:"
     else:
         reply_text = f"I scanned your image ({clean_tags}), but we don't have an exact match in stock right now."
-        matched_products = []  # Empty list prevents showing random items!
+        matched_products = []
         
     return {
         "reply": reply_text,
         "products": matched_products
     }
-
+app.include_router(organization_router)
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
