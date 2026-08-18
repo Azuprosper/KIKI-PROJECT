@@ -1,9 +1,13 @@
 import { ORG_PRODUCTS_API_URL, loadMyProducts } from "./org-products.js";
 
-const BASE_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api';
+const BASE_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev';
 const PRODUCT_API_URL = `${BASE_API_URL}/products`;
 const UPLOAD_API_URL = `${BASE_API_URL}/uploads/image`;
-const REPORT_API_URL = `${BASE_API_URL}/organization/reports/weekly/random_seller`;
+// 1. Update the base URL for your local organization endpoints
+const ORG_API_URL = 'https://cut-unjustly-ellipse.ngrok-free.dev';
+
+const REPORT_API_URL = `${ORG_API_URL}/organization/reports/weekly/random_seller`;
+
 
 // Load initial products list
 loadMyProducts();
@@ -191,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             outputDiv.style.display = 'none';
 
             try {
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
                 const response = await fetch(REPORT_API_URL, {
                     method: 'GET',
                     headers: {
