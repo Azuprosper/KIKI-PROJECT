@@ -1,10 +1,9 @@
 import { API_URL as PRODUCT_API_URL, loadProducts } from "./products.js";
 import { API_URL as CHAT_API_URL, toggleChat, appendMessage, handleSend, handleImageUpload } from "./chatbot.js";
 
-// Load products immediately
+
 loadProducts();
 
-// --- ACCOUNT DROPDOWN LOGIC ---
 const accountBtn = document.getElementById('account-btn');
 const dropdown = document.getElementById('account-dropdown');
 
@@ -21,7 +20,7 @@ if (accountBtn && dropdown) {
     });
 }
 
-// --- PAGE LOAD & DYNAMIC UI LOGIC ---
+
 document.addEventListener('DOMContentLoaded', () => {
     
     // 1. Search Bar Logic
@@ -40,27 +39,33 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') performSearch();
         });
+
+        searchInput.addEventListener('input', (e) => {
+            if (e.target.value.trim() === '') {
+                loadProducts(); 
+            }
+        });
     }
 
-    // 2. Authentication UI Toggles (Guest vs Logged In)
+   
     const guestHeaderActions = document.getElementById('guest-header-actions');
     const loggedInHeaderActions = document.getElementById('logged-in-header-actions');
-    const loggedInCart = document.getElementById('logged-in-cart'); // <-- Restored!
+    const loggedInCart = document.getElementById('logged-in-cart');
     const dropdownSellOption = document.getElementById('dropdown-sell-option');
 
     const token = localStorage.getItem('token') || localStorage.getItem('authToken');
     const userRole = localStorage.getItem('userRole');
 
     if (!token) {
-        // User is logged out
+       
         if (guestHeaderActions) guestHeaderActions.style.display = 'flex';
         if (loggedInHeaderActions) loggedInHeaderActions.style.display = 'none';
-        if (loggedInCart) loggedInCart.style.display = 'none'; // <-- Restored!
+        if (loggedInCart) loggedInCart.style.display = 'none';
     } else {
         // User is logged in
         if (guestHeaderActions) guestHeaderActions.style.display = 'none';
         if (loggedInHeaderActions) loggedInHeaderActions.style.display = 'inline-block';
-        if (loggedInCart) loggedInCart.style.display = 'flex'; // <-- Restored!
+        if (loggedInCart) loggedInCart.style.display = 'flex'; 
 
         // Hide "Sell with us" if they are already an organization
         if ((userRole === 'ORGANIZATION' || userRole === 'ORG') && dropdownSellOption) {
@@ -69,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// --- LOGOUT LOGIC ---
+
 const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('authToken');

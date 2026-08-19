@@ -4,13 +4,18 @@ export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products
 export async function loadProducts(searchKeyword = ''){
   try {
     let url = API_URL;
+    
     if (searchKeyword && typeof searchKeyword === 'string' && searchKeyword.trim() !== ''){
-        url = `${API_URL}&search=${encodeURIComponent(searchKeyword.trim())}`;
+        url = `${API_URL}?search=${encodeURIComponent(searchKeyword.trim())}`;
     }
-    const response = await fetch(url , {method: "GET", headers: {
-      "Content-Type": "application/json",
-      "ngrok-skip-browser-warning": "true"
-    }});
+    
+    const response = await fetch(url , {
+        method: "GET", 
+        headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "true"
+        }
+    });
     const data = await response.json();
     
     const products = data.content || data; 
@@ -20,7 +25,7 @@ export async function loadProducts(searchKeyword = ''){
 
     container.innerHTML = '';
 
-   if (!products || products.length === 0) {
+    if (!products || products.length === 0) {
       container.innerHTML = '<p style="color: white; text-align: center; grid-column: 1 / -1;">No products found.</p>';
       return;
     }
@@ -29,7 +34,7 @@ export async function loadProducts(searchKeyword = ''){
         const card = document.createElement('div');
         card.classList.add('product-card');
 
-        // The button stays for visuals, but does nothing when clicked!
+        
         card.innerHTML = `
             <img src="${product.imageUrl}" alt="${product.name}" class="product-image">
             <div class="product-name">${product.name}</div>
