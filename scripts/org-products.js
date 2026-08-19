@@ -65,7 +65,7 @@ export function renderProducts(products) {
         
         mainContainer.style.display = 'block'; 
         mainContainer.style.height = 'auto';
-        mainContainer.style.paddingTop = '120px'; 
+        mainContainer.style.paddingTop = '20px'; 
         
         grid.innerHTML = '';
         
@@ -90,7 +90,7 @@ export function renderProducts(products) {
     }
 }
 
-// NEW: Export this helper so dashboard.js can update the array after a deletion!
+
 export function updateAllProducts(newProductsArray) {
     allProducts = newProductsArray;
 }

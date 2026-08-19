@@ -76,22 +76,19 @@
         <div class="modal-content">
             <button class="close-modal-btn" id="close-modal">&times;</button>
             <h2>Add New Product</h2>
-            <p class="modal-subtitle">Enter the details of the product you want to list.</p>
+            <div class="modal-subtitle">Enter the details of the product you want to list.</div>
             
            <form id="add-product-form">
 
                <input type="hidden" id="edit-product-id" value="">
                <input type="text" placeholder="Product Name" class="modal-input" required>
-               
-                <input type="text" placeholder="Product Name" class="modal-input" required>
+                
+                <textarea placeholder="Product Description" class="modal-input" rows="2" required style="resize: vertical; font-family: inherit;"></textarea>
+                
+                <input type="tel" placeholder="Price ($)" class="modal-input" required>
                 
                
-                <textarea placeholder="Product Description" class="modal-input" rows="3" required style="resize: vertical; font-family: inherit;"></textarea>
-                
-                <input type="number" placeholder="Price ($)" class="modal-input" required>
-                
-               
-                <input type="number" placeholder="Stock Quantity" class="modal-input" required>
+                <input type="tel" placeholder="Stock Quantity" class="modal-input" required>
                 
                 
                 <label for="product-image" class="file-upload-label">Upload Product Image</label>

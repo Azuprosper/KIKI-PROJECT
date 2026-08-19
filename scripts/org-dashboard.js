@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
         openBtn.addEventListener('click', () => {
             const form = document.getElementById('add-product-form');
             if (form) form.reset();
+
+            document.getElementById('product-modal').classList.remove('is-update-layout');
             
             document.getElementById('edit-product-id').value = ''; // Clear hidden ID
             document.getElementById('image-preview-container').style.display = 'none';
@@ -165,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const endpointUrl = isUpdating ? `${PRODUCT_API_URL}/${editProductId}` : PRODUCT_API_URL;
                 const requestMethod = isUpdating ? 'PUT' : 'POST';
 
-                // 2. Upload the new image (ONLY if they actually picked a new file)
+                // 2. Upload the new image (ONLY if i actually picked a new file)
                 let imageUrl = null;
                 if (imageFile) {
                     submitBtn.textContent = 'Uploading image...';
@@ -185,6 +187,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Only attach the image field to the JSON if a new one was uploaded
                 if (imageUrl) {
                     payload.imageUrl = imageUrl;
+                }else if (isUpdating) {
+                    const existingProduct = allProducts.find(p => String(p.id) === String(editProductId));
+                    if (existingProduct && existingProduct.imageUrl) {
+                        payload.imageUrl = existingProduct.imageUrl;
+                    }
                 }
 
                 // 4. Send to the backend
@@ -202,10 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = responseText ? JSON.parse(responseText) : {};
 
                 if (!response.ok) {
-                    throw new Error(data.message || 'Failed to process product.');
+                    throw new Error(data.message);
                 }
-
-                alert(isUpdating ? 'Product updated successfully!' : 'Product added successfully!');
                 
                 // Clean up and close
                 addProductForm.reset();
@@ -351,6 +356,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('#product-modal h2').textContent = 'Update Product';
             document.querySelector('.modal-submit-btn').textContent = 'Update Product';
             document.getElementById('product-image').required = false;
+
+            document.getElementById('product-modal').classList.add('is-update-layout');
             
             document.getElementById('product-modal').style.display = 'flex';
         }

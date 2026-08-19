@@ -23,7 +23,7 @@
 }
 
 .add-product-btn {
-    background-color: royalblue;
+    background-color: rgb(26, 84, 191);
     color: white;
     border: none;
     padding: 12px 24px;
@@ -34,9 +34,11 @@
     transition: background-color 0.3s;
 }
 
-.add-product-btn:hover {
-    background-color: darkblue;
+.add-product-btn:hover,
+.modal-submit-btn:hover{
+    background-color: rgb(0, 58, 167);
 }
+
 
 
 .modal-overlay {
@@ -90,7 +92,7 @@
 
 .modal-submit-btn {
     width: 100%;
-    background-color: royalblue;
+    background-color: rgb(26, 84, 191);
     color: white;
     border: none;
     padding: 12px;
@@ -99,6 +101,7 @@
     font-size: 16px;
     font-weight: 500;
 }
+
 
 
 .file-upload-label {
@@ -142,6 +145,9 @@
     padding: 5px; 
     cursor: pointer;
 }
+.delete-product-btn:hover{
+    background-color: rgb(133, 77, 77);
+}
 .update-product-btn{
     background-color: rgb(20, 118, 118);
     color: white; 
@@ -150,4 +156,34 @@
     border-radius: 4px; 
     padding: 5px; 
     cursor: pointer;
+}
+.update-product-btn:hover{
+    background-color: rgb(15, 84, 84);
+}
+/* the modal that pops up on updating a product{Azu} */
+#product-modal .modal-content {
+    max-width: 700px; 
+    width: 90%;
+}
+
+#product-modal #add-product-form {
+    display: grid;
+    grid-template-columns: 1fr 250px; 
+    column-gap: 30px; 
+    row-gap: 15px;    
+    align-items: start;
+}
+
+#product-modal #add-product-form > *:not(#image-preview-container) {
+    grid-column: 1;
+}
+#product-modal #image-preview-container {
+    grid-column: 2;
+    grid-row: 1 / 10; 
+    margin-top: 0;
+    width: 100%;
+}
+#product-modal #add-product-form button[type="submit"] {
+    grid-column: 1 / -1; 
+    margin-top: 20px;
 }

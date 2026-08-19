@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                // alert("Registration successful! You can now log in.");
+             
                 window.location.href = 'login.html';
             } else {
                 // Expecting backend to return validation object like: { firstName: "...", username: "...", message: "..." }
