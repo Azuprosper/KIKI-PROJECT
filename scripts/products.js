@@ -29,6 +29,7 @@ export async function loadProducts(searchKeyword = ''){
         const card = document.createElement('div');
         card.classList.add('product-card');
 
+        // The button stays for visuals, but does nothing when clicked!
         card.innerHTML = `
             <img src="${product.imageUrl}" alt="${product.name}" class="product-image">
             <div class="product-name">${product.name}</div>
@@ -38,20 +39,6 @@ export async function loadProducts(searchKeyword = ''){
         `;
 
         container.appendChild(card);
-    });
-
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const productId = parseInt(btn.dataset.productId, 10);
-        const product = products.find(p => p.id === productId);
-        if (product) {
-          addToCart(product);
-          btn.textContent = 'Added!';
-          setTimeout(() => {
-            btn.textContent = 'Add to Cart';
-          }, 1000);
-        }
-      });
     });
 
   } catch (error) {

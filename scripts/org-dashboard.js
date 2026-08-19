@@ -1,10 +1,10 @@
-import { ORG_PRODUCTS_API_URL, loadMyProducts } from "./org-products.js";
+import { ORG_PRODUCTS_API_URL, PRODUCT_BASE_URL, loadMyProducts, allProducts, renderProducts, updateAllProducts } from "./org-products.js";
 import { API_URL as CHAT_API_URL, toggleChat, appendMessage, handleSend, handleImageUpload } from "./chatbot.js";
 // import { loadMyProducts } from "./products.js";
 
 const PRODUCT_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
 const UPLOAD_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/uploads/image';
-
+const ORG_PROFILE_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/organizations/me';
 
 loadMyProducts();
 
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 2. MODAL LOGIC ---
+ 
     const modal = document.getElementById('product-modal');
     const openBtn = document.getElementById('open-add-product-modal');
     const closeBtn = document.getElementById('close-modal');
@@ -37,15 +37,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal && openBtn && closeBtn) {
         // Open modal
         openBtn.addEventListener('click', () => {
+            const form = document.getElementById('add-product-form');
+            if (form) form.reset();
+            
+            document.getElementById('edit-product-id').value = ''; // Clear hidden ID
+            document.getElementById('image-preview-container').style.display = 'none';
+            document.getElementById('image-preview').src = '';
+            
+            // Reset text to "Add" mode
+            document.querySelector('#product-modal h2').textContent = 'Add New Product';
+            document.querySelector('.modal-submit-btn').textContent = 'Save Product';
+
             modal.style.display = 'flex';
         });
 
-        // Close modal via 'X' button
+        
         closeBtn.addEventListener('click', () => {
             modal.style.display = 'none';
         });
 
-        // Close modal when clicking on the dark overlay background
+        
         window.addEventListener('click', (event) => {
             if (event.target === modal) {
                 modal.style.display = 'none';
@@ -53,37 +64,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 3. LOGOUT LOGIC ---
+
     const logoutBtn = document.getElementById('logout-btn');
 
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            // 1. Clear the authentication data from localStorage
+            
             localStorage.removeItem('token');
-            localStorage.removeItem('authToken'); // Just in case you use this key anywhere
+            localStorage.removeItem('authToken'); 
             localStorage.removeItem('userRole');
 
-            // 2. Redirect the user back to the login page (or index.html)
+            
             window.location.href = 'login.html';
         });
     }
 
-    // --- 4. IMAGE PREVIEW LOGIC ---
+  
     const imageInput = document.getElementById('product-image');
     const imagePreviewContainer = document.getElementById('image-preview-container');
     const imagePreview = document.getElementById('image-preview');
 
     if (imageInput) {
         imageInput.addEventListener('change', function(event) {
-            // Grab the first file the user selected from their laptop
+           
             const file = event.target.files[0]; 
 
             if (file) {
-                // Create a FileReader to read the image data
+             
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
-                    // Set the image source to the file's data and show the container
+                  
                     imagePreview.src = e.target.result;
                     imagePreviewContainer.style.display = 'block';
                 }
@@ -101,10 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 5. SUBMIT NEW PRODUCT LOGIC (UPLOAD IMAGE FIRST, THEN CREATE PRODUCT) ---
     const addProductForm = document.getElementById('add-product-form');
 
-    // Helper: uploads the picked file to Cloudinary via the backend, returns the hosted URL
+   
     async function uploadProductImage(file, token) {
         const formData = new FormData();
-        formData.append('file', file); // field name MUST be "file" - backend reads @RequestParam("file")
+        formData.append('file', file); 
 
         const response = await fetch(UPLOAD_API_URL, {
             method: 'POST',
@@ -145,49 +156,71 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.textContent = 'Saving...';
 
                 const token = localStorage.getItem('token');
+                
+                // 1. Check if we are updating or creating
+                const editProductId = document.getElementById('edit-product-id').value;
+                const isUpdating = editProductId !== "";
+                
+                // Determine the correct URL and Method based on whether we are updating or adding
+                const endpointUrl = isUpdating ? `${PRODUCT_API_URL}/${editProductId}` : PRODUCT_API_URL;
+                const requestMethod = isUpdating ? 'PUT' : 'POST';
 
-                // 1. Upload the image first (if one was picked) to get back a real URL
+                // 2. Upload the new image (ONLY if they actually picked a new file)
                 let imageUrl = null;
                 if (imageFile) {
                     submitBtn.textContent = 'Uploading image...';
                     imageUrl = await uploadProductImage(imageFile, token);
                 }
 
-                submitBtn.textContent = 'Saving...';
+                submitBtn.textContent = isUpdating ? 'Updating...' : 'Saving...';
 
-                // 2. Send the normal product payload as JSON, imageUrl now points to Cloudinary
-                const response = await fetch(PRODUCT_API_URL, {
-                    method: 'POST',
+                // 3. Build the payload
+                const payload = {
+                    name: nameInput.value.trim(),
+                    description: descInput.value.trim(),
+                    price: priceInput.value.trim(),
+                    stockQuantity: stockInput.value.trim()
+                };
+
+                // Only attach the image field to the JSON if a new one was uploaded
+                if (imageUrl) {
+                    payload.imageUrl = imageUrl;
+                }
+
+                // 4. Send to the backend
+                const response = await fetch(endpointUrl, {
+                    method: requestMethod,
                     headers: {
                         'ngrok-skip-browser-warning': 'true',
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        name: nameInput.value.trim(),
-                        description: descInput.value.trim(),
-                        price: priceInput.value.trim(),
-                        stockQuantity: stockInput.value.trim(),
-                        imageUrl: imageUrl
-                    })
+                    body: JSON.stringify(payload)
                 });
 
                 const responseText = await response.text();
                 const data = responseText ? JSON.parse(responseText) : {};
 
                 if (!response.ok) {
-                    throw new Error(data.message || 'Failed to add product.');
+                    throw new Error(data.message || 'Failed to process product.');
                 }
 
-                alert('Product added successfully!');
+                alert(isUpdating ? 'Product updated successfully!' : 'Product added successfully!');
                 
+                // Clean up and close
                 addProductForm.reset();
+                document.getElementById('edit-product-id').value = '';
+                document.getElementById('product-image').required = true; // reset required rule
                 document.getElementById('image-preview-container').style.display = 'none';
-                document.getElementById('image-preview').src = '';
                 document.getElementById('product-modal').style.display = 'none';
                 
+                // Refresh the grid!
+                if (typeof loadMyProducts === "function") {
+                    loadMyProducts();
+                }
+                
             } catch (error) {
-                console.error('Error adding product:', error);
+                console.error('Error processing product:', error);
                 alert(error.message);
             } finally {
                 submitBtn.disabled = false;
@@ -195,5 +228,132 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // FETCH AND DISPLAY ORG NAME IN HEADER 
+    async function loadOrganizationProfile() {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        try {
+            const response = await fetch(ORG_PROFILE_API_URL, {
+                method: 'GET',
+                headers: {
+                    'ngrok-skip-browser-warning': 'true',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const orgData = await response.json();
+                const taglineElement = document.getElementById('header-tagline');
+                
+                if (taglineElement) {
+                    const storeName = orgData.name || orgData.orgName;
+                    taglineElement.textContent = storeName.toUpperCase();
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching org profile:', error);
+        }
+    }
+
+    
+    loadOrganizationProfile();
+
+    const searchInput = document.getElementById('search-bar'); 
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            const filteredProducts = allProducts.filter(product => {
+                return product.name.toLowerCase().includes(searchTerm);
+            });
+            renderProducts(filteredProducts);
+        });
+    }
+
+    // --- DELETE MODAL LOGIC ---
+    let productToDeleteId = null; 
+    const deleteModal = document.getElementById('delete-confirm-modal');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', () => {
+            if (deleteModal) deleteModal.style.display = 'none';
+            productToDeleteId = null; 
+        });
+    }
+
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', async () => {
+            if (!productToDeleteId) return;
+
+            try {
+                confirmDeleteBtn.textContent = 'Deleting...';
+                confirmDeleteBtn.disabled = true;
+                const token = localStorage.getItem('token');
+
+                const response = await fetch(`${PRODUCT_BASE_URL}/${productToDeleteId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete the product.');
+
+                // Filter out the deleted product and update the array in org-products.js
+                const newProducts = allProducts.filter(product => String(product.id) !== String(productToDeleteId));
+                updateAllProducts(newProducts);
+                
+                // Redraw the grid
+                renderProducts(newProducts);
+                
+                if (deleteModal) deleteModal.style.display = 'none';
+
+            } catch (error) {
+                console.error("Error deleting product:", error);
+                alert(error.message); 
+            } finally {
+                confirmDeleteBtn.textContent = 'Yes, Delete';
+                confirmDeleteBtn.disabled = false;
+                productToDeleteId = null;
+            }
+        });
+    }
+
+    // --- MAIN GRID CLICK LISTENER (EDIT & DELETE TRIGGER) ---
+    document.addEventListener('click', async (e) => {
+        
+        if (e.target.classList.contains('delete-product-btn')) {
+            productToDeleteId = e.target.getAttribute('data-id');
+            if (deleteModal) deleteModal.style.display = 'flex';
+        } 
+        
+        else if (e.target.classList.contains('update-product-btn')) {
+            const productId = e.target.getAttribute('data-id');
+            
+            const product = allProducts.find(p => String(p.id) === String(productId));
+            if (!product) return;
+
+            document.getElementById('edit-product-id').value = product.id;
+            document.querySelector('input[placeholder="Product Name"]').value = product.name;
+            document.querySelector('textarea[placeholder="Product Description"]').value = product.description;
+            document.querySelector('input[placeholder="Price ($)"]').value = product.price;
+            document.querySelector('input[placeholder="Stock Quantity"]').value = product.stockQuantity;
+
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImage = document.getElementById('image-preview');
+            previewImage.src = product.imageUrl || 'images/kiki-logo.webp';
+            previewContainer.style.display = 'block';
+
+            document.querySelector('#product-modal h2').textContent = 'Update Product';
+            document.querySelector('.modal-submit-btn').textContent = 'Update Product';
+            document.getElementById('product-image').required = false;
+            
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+    });
     
 });
