@@ -1,5 +1,5 @@
 // const BASE_URL = 'http://localhost:4200';
-export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products?size=100';
+export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
 
 export async function loadProducts(searchKeyword = ''){
   try {
