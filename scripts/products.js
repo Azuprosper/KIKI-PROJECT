@@ -7,7 +7,7 @@ export async function loadProducts(searchKeyword = ''){
     
     if (searchKeyword && typeof searchKeyword === 'string' && searchKeyword.trim() !== ''){
         url = `${API_URL}?search=${encodeURIComponent(searchKeyword.trim())}`;
-    }
+    } //The encodeURIComponent safely translates spaces and special characters into a format the web can understand. { for future references --- AZU}
     
     const response = await fetch(url , {
         method: "GET", 
@@ -18,17 +18,17 @@ export async function loadProducts(searchKeyword = ''){
     });
     const data = await response.json();
     
-    const products = data.content || data; 
+    const products = data.content; 
 
     const container = document.getElementById('products-container');
     if (!container) return;
 
     container.innerHTML = '';
 
-    if (!products || products.length === 0) {
-      container.innerHTML = '<p style="color: white; text-align: center; grid-column: 1 / -1;">No products found.</p>';
-      return;
-    }
+    // if (!products || products.length === 0) {
+    //   container.innerHTML = '<p style="color: white; text-align: center; grid-column: 1 / -1;">No products found.</p>';
+    //   return;
+    // }
 
     products.forEach(product => {
         const card = document.createElement('div');

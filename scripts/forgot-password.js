@@ -19,10 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ email })
             });
 
-            // Read response as text
+            // Read response as text{ for future reference }
             const responseText = await response.text();
             
-            // Parse as JSON safely, or fallback to text string
+            // Parse as JSON safely, or fallback to text string if the backend fails { for future references }
             let data;
             try {
                 data = JSON.parse(responseText);
@@ -31,9 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (response.ok) {
-                console.log("Password Reset Response / Token Details:", data);
+                // console.log("Password Reset Response / Token Details:", data);
                 
-                // Extract message whether data is a JSON object or a raw string
                 const serverMessage = typeof data === 'object' ? (data?.message || "If an Account exist for the email, reset link has been sent") : data;
 
                 if (errorMsg) {
@@ -59,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (submitBtn) {
         submitBtn.addEventListener('click', (e) => {
-            e.preventDefault();
+            e.preventDefault(); //stops the page from refreshing
             handlePasswordReset();
         });
     }

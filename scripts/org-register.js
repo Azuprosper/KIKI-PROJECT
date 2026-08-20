@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'POST', // Must be POST
                     headers: {
                         'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true' // Prevents ngrok from blocking JSON payload requests
+                        'ngrok-skip-browser-warning': 'true' // Prevents ngrok from blocking JSON payload requests{ AZU }
                     },
                     body: JSON.stringify(payload)
                 });
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = responseText ? JSON.parse(responseText) : {};
 
                 if (!response.ok) {
-                    throw new Error(data.message || 'Registration failed.');
+                    throw new Error(data.message || 'Registration failed.'); 
                 }
 
                 window.location.href = 'login.html';

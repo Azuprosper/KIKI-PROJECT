@@ -9,7 +9,7 @@ const dropdown = document.getElementById('account-dropdown');
 
 if (accountBtn && dropdown) {
     accountBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
+        e.stopPropagation(); //This stops the click from "bubbling up" to the rest of the page. Without this, the click would immediately trigger the window listener below it and close the menu instantly { AI ASSISTED ME }
         dropdown.classList.toggle('show');
     });
 
@@ -23,7 +23,6 @@ if (accountBtn && dropdown) {
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. Search Bar Logic
     const searchBtn = document.querySelector('.search-btn');
     const searchInput = document.querySelector('.search-input');
 
@@ -62,13 +61,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loggedInHeaderActions) loggedInHeaderActions.style.display = 'none';
         if (loggedInCart) loggedInCart.style.display = 'none';
     } else {
-        // User is logged in
+        // User is logged in { AZU }
         if (guestHeaderActions) guestHeaderActions.style.display = 'none';
         if (loggedInHeaderActions) loggedInHeaderActions.style.display = 'inline-block';
         if (loggedInCart) loggedInCart.style.display = 'flex'; 
 
-        // Hide "Sell with us" if they are already an organization
-        if ((userRole === 'ORGANIZATION' || userRole === 'ORG') && dropdownSellOption) {
+        // Hide "Sell with us" if they are already an organization { AZU }
+        if ((userRole === 'ORGANIZATION') && dropdownSellOption) {
             dropdownSellOption.style.display = 'none';
         }
     }

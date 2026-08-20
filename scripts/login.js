@@ -2,7 +2,6 @@ const LOGIN_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/auth/logi
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. Grab the inputs AND your new specific error divs
     const usernameInput = document.getElementById('login-username');
     const passwordInput = document.getElementById('login-password');
     const loginBtn = document.getElementById('login-button');
@@ -12,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const generalErrorDiv = document.getElementById('login-error');
 
     const login = async () => {
-        // 2. Clear out any old error messages before sending the new request
+        
         if (userErrorDiv) userErrorDiv.textContent = '';
         if (passwordErrorDiv) passwordErrorDiv.textContent = '';
         if (generalErrorDiv) generalErrorDiv.textContent = '';
@@ -22,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const response = await fetch(LOGIN_API_URL, {
-                method: 'POST',
+                method: 'POST', //cause we're sending data{AZU}
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -37,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('userRole', data.role);
                 }
                 
-                const userRole = data.role ? data.role.toUpperCase() : 'CUSTOMER'; 
+                const userRole = data.role ? data.role.toUpperCase() : 'CUSTOMER'; //the colon acts as an 'else' condition{AZU}
 
                 if (userRole === 'ORGANIZATION') {
                     window.location.href = 'org-dashboard.html';
@@ -48,30 +47,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
             } else {
-                // 3. TARGETED ERROR HANDLING
-                const errorBody = await response.json().catch(() => null);
+               
+                const errorBody = await response.json().catch(() => null); //If a user types the wrong password. This block catches that rejection and figures out where to display the error {AZU}
                 
                 if (errorBody) {
-                    let handledSpecificError = false;
+                    let handledSpecificError = false; // it checks if we've already shown an error to the user.{AZU}
 
-                    // If the backend sends a specific username error, put it under the username field
                     if (errorBody.username && userErrorDiv) {
                         userErrorDiv.textContent = errorBody.username;
                         handledSpecificError = true;
                     }
 
-                    // If the backend sends a specific password error, put it under the password field
                     if (errorBody.password && passwordErrorDiv) {
                         passwordErrorDiv.textContent = errorBody.password;
                         handledSpecificError = true;
                     }
 
-                    // If it's a general error and not a field-specific one
                     if (errorBody.message && !handledSpecificError && generalErrorDiv) {
                         generalErrorDiv.textContent = errorBody.message;
                     }
                 } else {
-                    // Fallback if the backend completely fails to send a readable JSON error
+
                     if (generalErrorDiv) {
                         generalErrorDiv.textContent = 'Login failed. Please check your credentials.';
                     }

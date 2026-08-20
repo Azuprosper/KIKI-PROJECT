@@ -7,14 +7,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const confirmBtn = document.getElementById('login-button');
     const generalError = document.getElementById('general-error'); 
 
-    // Grab the token automatically from the URL query parameters
+    // Grab the token automatically from the URL query parameters{ for future references }
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
-    // 1. Validate the token/URL as soon as the page loads
+    
 
     if (!token) {
-        // if (generalError) generalError.textContent = "Missing reset token in URL.";
+        
         if (confirmBtn) confirmBtn.disabled = true;
     } else {
         try {
@@ -40,13 +40,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.log("Token validation successful:", validateData);
             }
         } catch (error) {
-            // This will show us the real reason in your browser console (F12 -> Console)
+           
             console.error("Detailed validation network/CORS error:", error);
-            // Don't disable the button here so you can still test your reset if CORS is just being stubborn
+           
         }
     }
 
-    // 2. Handle the actual password reset submission
+    
     const handleReset = async () => {
         if (generalError) generalError.textContent = '';
 
@@ -74,10 +74,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await response.json().catch(() => null);
 
             if (response.ok) {
-                // Correct URL and matching passwords -> Redirects to login page
                 window.location.href = 'login.html';
             } else {
-                console.log("Full error response object from backend:", data);
                 const backendErrorMessage = data?.message || data?.error || data?.token || data?.password || "Password reset failed.";
                 if (generalError) {
                     generalError.textContent = backendErrorMessage;

@@ -1,7 +1,7 @@
 const REGISTER_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/auth/register'; 
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Grabbing input elements
+    
     const firstNameInput = document.getElementById('register-firstname');
     const lastNameInput = document.getElementById('register-lastname');
     const usernameInput = document.getElementById('register-username');
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerButton = document.getElementById('register-button');
     const generalErrorMessage = document.getElementById('register-error');
 
-    // Grabbing individual error feedback paragraphs
+    
     const errFirstName = document.getElementById('js-firstname');
     const errLastName = document.getElementById('js-lastname');
     const errUsername = document.getElementById('js-username');
@@ -59,11 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
              
                 window.location.href = 'login.html';
             } else {
-                // Expecting backend to return validation object like: { firstName: "...", username: "...", message: "..." }
+              
                 const errorBody = await response.json().catch(() => null);
 
                 if (errorBody) {
-                    // Map individual field errors if they exist in the response
+                    // Get individual field errors messages if they exist in the response{ Azu }
                     if (errorBody.firstName && errFirstName) errFirstName.textContent = errorBody.firstName;
                     if (errorBody.lastName && errLastName) errLastName.textContent = errorBody.lastName;
                     if (errorBody.username && errUsername) errUsername.textContent = errorBody.username;
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (errorBody.phoneNumber && errPhoneNumber) errPhoneNumber.textContent = errorBody.phoneNumber;
                     if (errorBody.password && errPassword) errPassword.textContent = errorBody.password;
 
-                    // Fallback general message if backend sends a global error string
+                    // Fallback general message if backend sends a general error string{Azu}
                     if (errorBody.message && generalErrorMessage) {
                         generalErrorMessage.textContent = errorBody.message;
                     }
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (registerButton) {
         registerButton.addEventListener('click', (e) => {
-            e.preventDefault();
+            e.preventDefault(); //prevents the page from automatically refreshing {AZU}
             handleRegister();
         });
     }
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (passwordInput) {
         passwordInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault();
+                e.preventDefault(); //prevents the page from automatically refreshing {AZU}
                 handleRegister();
             }
         });
