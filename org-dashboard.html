@@ -16,12 +16,12 @@
   </head>
   <body>
 
-    <!-- HEADER -->
+  
     <header>
         <div class="logo">
             <a href="org-dashboard.html"><img src="images/kiki-logo.webp" alt="Kiki Logo"></a>
         </div>
-        <div class="tagline">THE BEST E-COMMERCE PLATFORM</div>
+        <div class="tagline" id="header-tagline">THE BEST E-COMMERCE PLATFORM</div>
             
         <div class="header-right-actions">
             
@@ -34,7 +34,7 @@
                     <span>Account</span>
                 </button>
 
-                <!-- DROPDOWN -->
+               
                 <div id="account-dropdown" class="dropdown-menu">
                     <ul class="dropdown-links">
                         <li><a href="account-info.html">My Account</a></li>
@@ -59,7 +59,7 @@
   </div>
 
 
-    <!-- MAIN EMPTY STATE UI -->
+    
     <main class="dashboard-empty-state">
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#caced6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
             <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
@@ -71,35 +71,47 @@
         <button id="open-add-product-modal" class="add-product-btn">Add Products</button>
     </main>
 
-    <!-- HIDDEN MODAL POP-UP -->
+    
     <div id="product-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="close-modal-btn" id="close-modal">&times;</button>
             <h2>Add New Product</h2>
-            <p class="modal-subtitle">Enter the details of the product you want to list.</p>
+            <div class="modal-subtitle">Enter the details of the product you want to list.</div>
             
            <form id="add-product-form">
-                <input type="text" placeholder="Product Name" class="modal-input" required>
+
+               <input type="hidden" id="edit-product-id" value="">
+               <input type="text" placeholder="Product Name" class="modal-input" required>
                 
-                <!--Description Input -->
-                <textarea placeholder="Product Description" class="modal-input" rows="3" required style="resize: vertical; font-family: inherit;"></textarea>
+                <textarea placeholder="Product Description" class="modal-input" rows="2" required style="resize: vertical; font-family: inherit;"></textarea>
                 
-                <input type="number" placeholder="Price ($)" class="modal-input" required>
+                <input type="tel" placeholder="Price ($)" class="modal-input" required>
                 
-                <!-- Stock Quantity Input -->
-                <input type="number" placeholder="Stock Quantity" class="modal-input" required>
+               
+                <input type="tel" placeholder="Stock Quantity" class="modal-input" required>
                 
-                <!-- File Upload Section -->
+                
                 <label for="product-image" class="file-upload-label">Upload Product Image</label>
                 <input type="file" id="product-image" accept="image/png, image/jpeg, image/webp" class="modal-file-input" required>
                 
-                <!-- Image Preview Area -->
+              
                 <div id="image-preview-container" class="image-preview-container">
                     <img id="image-preview" src="" alt="Product Preview">
                 </div>
 
                 <button type="submit" class="modal-submit-btn">Save Product</button>
             </form>
+        </div>
+    </div>
+
+    <div id="delete-confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background-color: white; padding: 25px 30px; border-radius: 8px; text-align: center; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+            <h3 style="margin: 0 0 10px 0; color: #333; font-size: 20px;">Delete Product?</h3>
+            <p style="color: #666; margin-bottom: 25px; font-size: 15px;">Are you sure you want to delete this product? This action cannot be undone.</p>
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button id="cancel-delete-btn" style="padding: 10px 20px; border: 1px solid #ccc; background-color: white; border-radius: 4px; cursor: pointer; color: #333; font-weight: bold;">Cancel</button>
+                <button id="confirm-delete-btn" style="padding: 10px 20px; border: none; background-color: rgb(206, 118, 118); color: white; border-radius: 4px; cursor: pointer; font-weight: bold;">Yes, Delete</button>
+            </div>
         </div>
     </div>
 

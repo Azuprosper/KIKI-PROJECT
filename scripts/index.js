@@ -1,36 +1,15 @@
 import { API_URL as PRODUCT_API_URL, loadProducts } from "./products.js";
 import { API_URL as CHAT_API_URL, toggleChat, appendMessage, handleSend, handleImageUpload } from "./chatbot.js";
 
-// Load products initially
+
 loadProducts();
 
-// ----------------------------------------------------
-// 1. Cart Badge Logic (Restored from kiki.js)
-// ----------------------------------------------------
-let cartQuantity = parseInt(localStorage.getItem('cartQuantity')) || 0;
-
-function updateCartBadgeUI() {
-    const cartQuantityElement = document.querySelector('.cart-quantity');
-    if (cartQuantityElement) {
-        cartQuantityElement.textContent = cartQuantity;
-    }
-}
-
-function addToCart(productId, quantity = 1) {
-    cartQuantity += quantity;
-    localStorage.setItem('cartQuantity', cartQuantity);
-    updateCartBadgeUI();
-}
-
-// ----------------------------------------------------
-// 2. Account Dropdown Logic
-// ----------------------------------------------------
 const accountBtn = document.getElementById('account-btn');
 const dropdown = document.getElementById('account-dropdown');
 
 if (accountBtn && dropdown) {
     accountBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
+        e.stopPropagation(); //This stops the click from "bubbling up" to the rest of the page. Without this, the click would immediately trigger the window listener below it and close the menu instantly { AI ASSISTED ME }
         dropdown.classList.toggle('show');
     });
 
@@ -41,12 +20,9 @@ if (accountBtn && dropdown) {
     });
 }
 
-// ----------------------------------------------------
-// 3. DOM Content Loaded Initialization
-// ----------------------------------------------------
-document.addEventListener('DOMContentLoaded', () => {
-    updateCartBadgeUI();
 
+document.addEventListener('DOMContentLoaded', () => {
+    
     const searchBtn = document.querySelector('.search-btn');
     const searchInput = document.querySelector('.search-input');
 
@@ -62,9 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') performSearch();
         });
+
+        searchInput.addEventListener('input', (e) => {
+            if (e.target.value.trim() === '') {
+                loadProducts(); 
+            }
+        });
     }
 
-    // Dynamic Header & Role Management (From index.js)
+   
     const guestHeaderActions = document.getElementById('guest-header-actions');
     const loggedInHeaderActions = document.getElementById('logged-in-header-actions');
     const loggedInCart = document.getElementById('logged-in-cart');
@@ -74,34 +56,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const userRole = localStorage.getItem('userRole');
 
     if (!token) {
+       
         if (guestHeaderActions) guestHeaderActions.style.display = 'flex';
         if (loggedInHeaderActions) loggedInHeaderActions.style.display = 'none';
         if (loggedInCart) loggedInCart.style.display = 'none';
     } else {
+        // User is logged in { AZU }
         if (guestHeaderActions) guestHeaderActions.style.display = 'none';
         if (loggedInHeaderActions) loggedInHeaderActions.style.display = 'inline-block';
-        if (loggedInCart) loggedInCart.style.display = 'flex';
+        if (loggedInCart) loggedInCart.style.display = 'flex'; 
 
-        if ((userRole === 'ORGANIZATION' || userRole === 'ORG') && dropdownSellOption) {
+        // Hide "Sell with us" if they are already an organization { AZU }
+        if ((userRole === 'ORGANIZATION') && dropdownSellOption) {
             dropdownSellOption.style.display = 'none';
         }
     }
 });
 
-// ----------------------------------------------------
-// 4. Add to Cart Delegation (Restored from kiki.js)
-// ----------------------------------------------------
-document.addEventListener('click', (event) => {
-    const addToCartBtn = event.target.closest('.add-to-cart-button, .js-add-to-cart');
-    if (addToCartBtn) {
-        const productId = addToCartBtn.dataset.productId || "unknown";
-        addToCart(productId);
-    }
-});
 
-// ----------------------------------------------------
-// 5. Logout Handling
-// ----------------------------------------------------
 const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('authToken');
