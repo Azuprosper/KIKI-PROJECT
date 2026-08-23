@@ -45,7 +45,21 @@ export async function loadProducts(searchKeyword = ''){
         const productId = parseInt(btn.dataset.productId, 10);
         const product = products.find(p => p.id === productId);
         if (product) {
-          addToCart(product);
+          if (typeof addToCart === 'function') {
+            addToCart(product);
+          }
+
+          // --- CART INCREMENT LOGIC ---
+          const cartQuantityElement = document.querySelector('.cart-quantity');
+          let currentCartCount = parseInt(localStorage.getItem('cartCount')) || 0;
+          currentCartCount += 1;
+
+          if (cartQuantityElement) {
+            cartQuantityElement.textContent = currentCartCount;
+          }
+          localStorage.setItem('cartCount', currentCartCount);
+          // ----------------------------
+
           btn.textContent = 'Added!';
           setTimeout(() => {
             btn.textContent = 'Add to Cart';

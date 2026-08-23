@@ -5,14 +5,20 @@
 
 const BASE_URL = "https://kebab-rule-blandness.ngrok-free.dev";
 
+/* ── Helper: Retrieve Auth Token ── */
+function getAuthHeaders() {
+  const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+  return token ? { "Authorization": `Bearer ${token}` } : {};
+}
+
 /* ── Shared fetch wrapper ── */
 async function request(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
 
   const defaultHeaders = {
     "Content-Type": "application/json",
-    // ngrok tunnels require this header to bypass the browser warning page
     "ngrok-skip-browser-warning": "true",
+    ...getAuthHeaders(), // Automatically attaches JWT token if available
   };
 
   const response = await fetch(url, {
@@ -47,48 +53,54 @@ async function request(endpoint, options = {}) {
 
 /**
  * GET /api/cart
- * Fetch the full cart from the server.
- * @returns {Promise<{ items: Array }>}
+ * Fetch the full cart from the server and unwrap its items array.
+ * @returns {Promise<Array>}
  */
 export async function fetchCartFromServer() {
-  return request("/api/cart", { method: "GET" });
+  const data = await request("/api/cart", { method: "GET" });
+  // Unwraps the Java CartResponseDto { id, items, totalPrice } into just the items array
+  return data?.items || data?.cartItems || (Array.isArray(data) ? data : []);
 }
 
 /**
  * POST /api/cart/items
  * Add a new item to the server cart.
- * @param {{ product_id: string|number, quantity: number }} item
- * @returns {Promise<object>}
+ * Maps strictly to AddCartItemRequest.java: { productId, quantity }
  */
-export async function addToCart(item) {
+export async function addToCart(productId, quantity = 1) {
   return request("/api/cart/items", {
     method: "POST",
-    body: JSON.stringify(item),
+    body: JSON.stringify({ 
+      productId: Number(productId), 
+      quantity: Number(quantity) 
+    }),
   });
 }
 
 /**
- * PATCH /api/cart/items/:id
+ * PUT /api/cart/items/:itemId
  * Update the quantity of an existing cart item.
- * @param {string|number} id
+ * @param {string|number} cartItemId - The ID of the item in the cart (NOT the productId)
  * @param {number} quantity
  * @returns {Promise<object>}
  */
-export async function updateQty(id, quantity) {
-  return request(`/api/cart/items/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify({ quantity }),
+export async function updateQty(cartItemId, quantity) {
+  return request(`/api/cart/items/${cartItemId}`, {
+    method: "PUT", // Matches @PutMapping in CartController.java
+    body: JSON.stringify({ 
+      quantity: Number(quantity) 
+    }),
   });
 }
 
 /**
- * DELETE /api/cart/items/:id
+ * DELETE /api/cart/items/:itemId
  * Remove an item from the server cart.
- * @param {string|number} id
+ * @param {string|number} cartItemId - The ID of the item in the cart (NOT the productId)
  * @returns {Promise<null>}
  */
-export async function removeFromCart(id) {
-  return request(`/api/cart/items/${id}`, { method: "DELETE" });
+export async function removeFromCart(cartItemId) {
+  return request(`/api/cart/items/${cartItemId}`, { method: "DELETE" });
 }
 
 /**
