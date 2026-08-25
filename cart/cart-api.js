@@ -18,7 +18,7 @@ async function request(endpoint, options = {}) {
   const defaultHeaders = {
     "Content-Type": "application/json",
     "ngrok-skip-browser-warning": "true",
-    ...getAuthHeaders(), // Automatically attaches JWT token if available
+    ...getAuthHeaders(), // Attaches Bearer JWT token required by Authentication param
   };
 
   const response = await fetch(url, {
@@ -29,7 +29,6 @@ async function request(endpoint, options = {}) {
     },
   });
 
-  // Surface server errors as thrown Error objects
   if (!response.ok) {
     let message = `HTTP ${response.status}`;
     try {
@@ -41,7 +40,6 @@ async function request(endpoint, options = {}) {
     throw new Error(message);
   }
 
-  // 204 No Content → return null
   if (response.status === 204) return null;
 
   return response.json();
@@ -53,19 +51,22 @@ async function request(endpoint, options = {}) {
 
 /**
  * GET /api/cart
- * Fetch the full cart from the server and unwrap its items array.
- * @returns {Promise<Array>}
+ * Fetches CartResponseDto: { cartId, items: [...], totalPrice }
  */
 export async function fetchCartFromServer() {
   const data = await request("/api/cart", { method: "GET" });
-  // Unwraps the Java CartResponseDto { id, items, totalPrice } into just the items array
-  return data?.items || data?.cartItems || (Array.isArray(data) ? data : []);
+  
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.items)) return data.items;
+  if (Array.isArray(data.cartItems)) return data.cartItems;
+  
+  return [];
 }
 
 /**
  * POST /api/cart/items
- * Add a new item to the server cart.
- * Maps strictly to AddCartItemRequest.java: { productId, quantity }
+ * Maps strictly to AddCartItemRequest: { productId, quantity }
  */
 export async function addToCart(productId, quantity = 1) {
   return request("/api/cart/items", {
@@ -79,14 +80,11 @@ export async function addToCart(productId, quantity = 1) {
 
 /**
  * PUT /api/cart/items/:itemId
- * Update the quantity of an existing cart item.
- * @param {string|number} cartItemId - The ID of the item in the cart (NOT the productId)
- * @param {number} quantity
- * @returns {Promise<object>}
+ * Maps to updateItemQuantity(@PathVariable Long itemId, @RequestBody UpdateCartItemRequest)
  */
 export async function updateQty(cartItemId, quantity) {
   return request(`/api/cart/items/${cartItemId}`, {
-    method: "PUT", // Matches @PutMapping in CartController.java
+    method: "PUT",
     body: JSON.stringify({ 
       quantity: Number(quantity) 
     }),
@@ -95,9 +93,8 @@ export async function updateQty(cartItemId, quantity) {
 
 /**
  * DELETE /api/cart/items/:itemId
- * Remove an item from the server cart.
- * @param {string|number} cartItemId - The ID of the item in the cart (NOT the productId)
- * @returns {Promise<null>}
+ * Maps to removeItemFromCart(@PathVariable Long itemId)
+ * Returns updated CartResponseDto
  */
 export async function removeFromCart(cartItemId) {
   return request(`/api/cart/items/${cartItemId}`, { method: "DELETE" });
@@ -105,9 +102,6 @@ export async function removeFromCart(cartItemId) {
 
 /**
  * POST /api/cart/checkout
- * Submit the cart for checkout.
- * @param {{ coupon?: string }} payload
- * @returns {Promise<object>}
  */
 export async function submitCart(payload = {}) {
   return request("/api/cart/checkout", {

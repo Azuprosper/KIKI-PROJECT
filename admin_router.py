@@ -3,13 +3,12 @@ from pydantic import BaseModel
 from typing import Optional
 import json
 import os
-import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import random
 from datetime import datetime
 from groq import Groq
 
-load_dotenv()
+load_dotenv(find_dotenv())
 # Single APIRouter definition
 router = APIRouter(prefix="/organization", tags=["Organization & Seller Admin"])
 

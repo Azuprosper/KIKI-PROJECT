@@ -1,5 +1,5 @@
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import json
 import torch
 import requests
@@ -15,7 +15,7 @@ import urllib3
 from groq import Groq  # Make sure to run: pip install groq
 from admin_router import router as organization_router
 
-load_dotenv()
+load_dotenv(find_dotenv())
 
 # Limit PyTorch to CPU threads suitable for a dual-core i7
 torch.set_num_threads(2)

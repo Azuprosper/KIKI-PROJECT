@@ -13,6 +13,7 @@ import {
   clearState,
   getTotalCount,
   getSubtotal,
+  loadFromLocalStorage
 } from "./cart-state.js";
 
 import {
@@ -50,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
    CART BOOTSTRAP (Pure Backend Driven)
 ════════════════════════════════════════════ */
 
+
 async function initCart() {
   showLoading();
 
@@ -57,10 +59,27 @@ async function initCart() {
     const serverData = await fetchCartFromServer();
     const items = normaliseItems(serverData);
 
-    setItems(items);
+    // If server returned items, sync state. Otherwise keep local cache if available.
+    if (items.length > 0) {
+      setItems(items);
+    } else {
+      const cached = loadFromLocalStorage();
+      if (cached && cached.items && cached.items.length > 0) {
+        setItems(cached.items);
+      } else {
+        setItems([]);
+      }
+    }
   } catch (err) {
     console.error("[cart] Failed to fetch cart from server:", err.message);
-    showNotification("Failed to load your cart. Please try again.", "error");
+    
+    // Fallback to offline/localStorage cache instead of wiping out items
+    const cached = loadFromLocalStorage();
+    if (cached && cached.items) {
+      setItems(cached.items);
+    } else {
+      showNotification("Failed to load your cart. Please try again.", "error");
+    }
   } finally {
     renderAll();
   }
@@ -268,17 +287,16 @@ function initAccountDropdown() {
  * Normalise exact Java CartItemResponseDto into frontend state
  */
 function normaliseItems(serverData) {
-  // Handle if serverData is either the raw array or a wrapped object container
   const rawList = Array.isArray(serverData) 
     ? serverData 
     : (serverData?.items || serverData?.cartItems || []);
 
   return rawList.map((dto) => ({
     id:        dto.cartItemId || dto.id,       // CRITICAL: Used for PUT and DELETE requests
-    productId: dto.productId,                  // Kept in state in case we need it later
-    name:      dto.productName || dto.name,
-    price:     parseFloat(dto.unitPrice || dto.price || 0),
-    image:     dto.productImageUrl || dto.image || "../images/placeholder.png",
+    productId: dto.productId,                  // Kept in state for seller aggregation
+    name:      dto.productName || dto.name || "Product",
+    price:     parseFloat(dto.unitPrice ?? dto.price ?? 0),
+    image:     dto.productImageUrl || dto.image || dto.image_url || "../images/placeholder.png",
     quantity:  parseInt(dto.quantity || 1, 10),
   }));
 }
