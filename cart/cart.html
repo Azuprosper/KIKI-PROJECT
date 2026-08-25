@@ -1,26 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KIKI — My Cart</title>
+  <meta charset="UTF-8">
+  <title>Cart</title>
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Shared Header CSS (one level up) -->
-  <link rel="stylesheet" href="../styles/header.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Cart-specific CSS -->
-  <link rel="stylesheet" href="cart.css" />
+  <link rel="stylesheet" href="../styles/header.css">
+
+  <link rel="stylesheet" href="cart.css">
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════
-       HEADER  (mirrors kiki.html header)
-  ════════════════════════════════════════ -->
+
   <header>
     <div class="logo">
       <a href="../index.html">
@@ -61,9 +57,6 @@
     </div>
   </header>
 
-  <!-- ═══════════════════════════════════════
-       PAGE HERO BANNER
-  ════════════════════════════════════════ -->
   <section class="cart-hero">
     <h1>My Cart</h1>
     <nav class="breadcrumb" aria-label="breadcrumb">
@@ -73,14 +66,10 @@
     </nav>
   </section>
 
-  <!-- ═══════════════════════════════════════
-       NOTIFICATION BANNER
-  ════════════════════════════════════════ -->
+
   <div id="cart-notification" class="cart-notification hidden" role="alert"></div>
 
-  <!-- ═══════════════════════════════════════
-       MAIN CART SECTION
-  ════════════════════════════════════════ -->
+
   <main class="cart-main section-p">
 
     <!-- ── LOADING SKELETON ── -->
@@ -168,14 +157,12 @@
           <button id="btn-checkout" class="btn-checkout">Proceed to Checkout</button>
         </div>
 
-      </div><!-- /.cart-bottom-row -->
-    </div><!-- /#cart-content -->
+      </div>
+    </div>
 
   </main>
 
-  <!-- ═══════════════════════════════════════
-       FOOTER
-  ════════════════════════════════════════ -->
+
   <footer class="kiki-footer">
     <div class="footer-inner">
       <div class="footer-col">
@@ -202,9 +189,7 @@
     </div>
   </footer>
 
-  <!-- ═══════════════════════════════════════
-       SCRIPTS  (ES Modules)
-  ════════════════════════════════════════ -->
+
   <script type="module" src="cart.js"></script>
 
 </body>

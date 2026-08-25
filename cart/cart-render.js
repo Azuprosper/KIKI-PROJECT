@@ -1,7 +1,3 @@
-/* ════════════════════════════════════════════
-   KIKI — CART RENDER ENGINE
-   Pure DOM manipulation — no state mutations
-════════════════════════════════════════════ */
 
 import { getSubtotal, getTotal, state } from "./cart-state.js";
 
@@ -12,9 +8,7 @@ const cartContent  = () => document.getElementById("cart-content");
 const cartTbody    = () => document.getElementById("cart-tbody");
 const headerCount  = () => document.getElementById("header-cart-count");
 
-/* ════════════════════
-   View Switchers
-════════════════════ */
+
 
 export function showLoading() {
   cartLoading()?.classList.remove("hidden");
@@ -34,9 +28,7 @@ export function showContent() {
   cartContent()?.classList.remove("hidden");
 }
 
-/* ════════════════════
-   Cart Table
-════════════════════ */
+
 
 /**
  * Render all cart item rows into <tbody>.

@@ -1,11 +1,7 @@
-/* ════════════════════════════════════════════
-   KIKI — CART API LAYER
-   All fetch() calls → backend endpoints
-════════════════════════════════════════════ */
 
 const BASE_URL = "https://kebab-rule-blandness.ngrok-free.dev";
 
-/* ── Helper: Retrieve Auth Token ── */
+
 function getAuthHeaders() {
   const token = localStorage.getItem('token') || localStorage.getItem('authToken');
   return token ? { "Authorization": `Bearer ${token}` } : {};
@@ -100,9 +96,7 @@ export async function removeFromCart(cartItemId) {
   return request(`/api/cart/items/${cartItemId}`, { method: "DELETE" });
 }
 
-/**
- * POST /api/cart/checkout
- */
+
 export async function submitCart(payload = {}) {
   return request("/api/cart/checkout", {
     method: "POST",
