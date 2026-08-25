@@ -69,10 +69,41 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide "Sell with us" if they are already an organization { AZU }
         if ((userRole === 'ORGANIZATION') && dropdownSellOption) {
             dropdownSellOption.style.display = 'none';
-        }
+        }  
     }
-});
+    const productsContainer = document.getElementById('products-container');
+        const authModal = document.getElementById('auth-modal');
+        const closeModalBtn = document.getElementById('close-auth-modal');
 
+       
+        if (productsContainer) {
+            productsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    
+                    if (!token) {
+                        // Not logged in: Stop the cart logic, show modal{ AZU }
+                        e.preventDefault(); 
+                        if (authModal) authModal.style.display = 'flex';
+                    } else {
+                      
+                        const productId = e.target.getAttribute('data-product-id');
+                        console.log("Proceeding to add product to cart:", productId);
+                        
+                    }
+                }
+            });
+        }
+
+        //  Modal Close { AZU }
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => authModal.style.display = 'none');
+        }
+        window.addEventListener('click', (e) => {
+            if (e.target === authModal) authModal.style.display = 'none';
+        });
+     
+
+});
 
 const handleLogout = () => {
     localStorage.removeItem('token');
@@ -85,3 +116,7 @@ const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', handleLogout);
 }
+
+
+
+    

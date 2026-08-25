@@ -133,3 +133,73 @@ body {
     text-align: left;
     padding: 0; 
 }
+
+.auth-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.close-auth-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+}
+
+.auth-modal-content h3 {
+  margin-top: 0; 
+  color: rgb(75, 75, 75); 
+}
+.auth-modal-content p { 
+  color: rgb(94, 94, 94); 
+  margin-bottom: 25px; 
+  line-height: 1.5; 
+}
+.auth-modal-actions { 
+  display: flex; 
+  gap: 15px; 
+  justify-content: center; 
+}
+
+.modal-login-btn,
+.modal-register-btn {
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  flex: 1;
+}
+
+.modal-login-btn {
+  background-color: rgb(26, 84, 191); 
+  color: white; 
+}
+.modal-register-btn { 
+  background-color: white; 
+  color: rgb(26, 84, 191); 
+  border: 2px solid rgb(26, 84, 191);
+ }
