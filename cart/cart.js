@@ -11,10 +11,9 @@ import {
   setItemQty,
   removeItemFromState,
   clearState,
-  loadFromLocalStorage,
-  saveToLocalStorage,
   getTotalCount,
   getSubtotal,
+  loadFromLocalStorage
 } from "./cart-state.js";
 
 import {
@@ -49,34 +48,41 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ════════════════════════════════════════════
-   CART BOOTSTRAP
+   CART BOOTSTRAP (Pure Backend Driven)
 ════════════════════════════════════════════ */
+
 
 async function initCart() {
   showLoading();
 
   try {
-    /* 1. Try API first */
     const serverData = await fetchCartFromServer();
     const items = normaliseItems(serverData);
 
-    setItems(items);
-
-  } catch (err) {
-    console.warn("[cart] Server fetch failed — falling back to localStorage:", err.message);
-
-    /* 2. Fallback: hydrate from localStorage */
-    const cached = loadFromLocalStorage();
-    if (cached?.items?.length) {
-      setState({
-        items:    cached.items,
-        coupon:   cached.coupon   || "",
-        discount: cached.discount || 0,
-      });
+    // If server returned items, sync state. Otherwise keep local cache if available.
+    if (items.length > 0) {
+      setItems(items);
+    } else {
+      const cached = loadFromLocalStorage();
+      if (cached && cached.items && cached.items.length > 0) {
+        setItems(cached.items);
+      } else {
+        setItems([]);
+      }
     }
+  } catch (err) {
+    console.error("[cart] Failed to fetch cart from server:", err.message);
+    
+    // Fallback to offline/localStorage cache instead of wiping out items
+    const cached = loadFromLocalStorage();
+    if (cached && cached.items) {
+      setItems(cached.items);
+    } else {
+      showNotification("Failed to load your cart. Please try again.", "error");
+    }
+  } finally {
+    renderAll();
   }
-
-  renderAll();
 }
 
 /* ════════════════════════════════════════════
@@ -110,7 +116,7 @@ async function handleRemove(id) {
     await removeFromCart(id);
     showNotification("Item removed from cart.", "success");
   } catch (err) {
-    /* Rollback */
+    /* Rollback on server error */
     setItems(backup);
     renderAll();
     showNotification(`Failed to remove item: ${err.message}`, "error");
@@ -136,7 +142,7 @@ async function handleQtyChange(id, newQty) {
   try {
     await updateQty(id, newQty);
   } catch (err) {
-    /* Rollback */
+    /* Rollback on server error */
     setItemQty(id, oldQty);
     updateRowSubtotal(id, item.price, oldQty);
     renderSummary();
@@ -156,7 +162,6 @@ function initCoupon() {
 
   if (!btn || !input) return;
 
-  /* Pre-fill if coupon already in state */
   if (state.coupon) input.value = state.coupon;
 
   btn.addEventListener("click", () => applyCoupon(input, msg));
@@ -165,12 +170,10 @@ function initCoupon() {
   });
 }
 
-/* Simple client-side coupon logic.
-   Replace / extend with a real API call as needed. */
 const COUPONS = {
-  KIKI10:  0.10,   // 10 %
-  KIKI20:  0.20,   // 20 %
-  SAVE5:   5,      // flat $5 (handled below)
+  KIKI10: 0.10,   // 10%
+  KIKI20: 0.20,   // 20%
+  SAVE5:  5,      // flat $5
 };
 
 function applyCoupon(input, msgEl) {
@@ -193,7 +196,6 @@ function applyCoupon(input, msgEl) {
       : parseFloat((subtotal * COUPONS[code]).toFixed(2));
 
   setState({ coupon: code, discount });
-  saveToLocalStorage();
   renderSummary();
   setMsg(msgEl, `Coupon "${code}" applied! You save $${discount.toFixed(2)}.`, "success");
   showNotification(`Coupon "${code}" applied!`, "success");
@@ -250,18 +252,16 @@ function initClearCart() {
     renderAll();
 
     try {
-      /* Delete each item via API */
       await Promise.all(backup.map((i) => removeFromCart(i.id)));
       showNotification("Cart cleared.", "info");
     } catch (err) {
-      /* Partial failure — still cleared locally */
       console.warn("[cart] Partial clear error:", err.message);
     }
   });
 }
 
 /* ════════════════════════════════════════════
-   ACCOUNT DROPDOWN  (mirrors kiki.js)
+   ACCOUNT DROPDOWN
 ════════════════════════════════════════════ */
 
 function initAccountDropdown() {
@@ -284,25 +284,25 @@ function initAccountDropdown() {
 ════════════════════════════════════════════ */
 
 /**
- * Normalise varying API response shapes into a flat items array.
- * Adjust field names to match your actual backend response.
+ * Normalise exact Java CartItemResponseDto into frontend state
  */
-function normaliseItems(data) {
-  if (!data) return [];
-  const raw = data.items ?? data.cart_items ?? data ?? [];
-  return Array.isArray(raw)
-    ? raw.map((i) => ({
-        id:        i.id       ?? i.product_id,
-        name:      i.name     ?? i.product_name ?? "Unknown Product",
-        price:     parseFloat(i.price           ?? i.unit_price ?? 0),
-        image:     i.image    ?? i.image_url    ?? "",
-        quantity:  parseInt(i.quantity          ?? 1, 10),
-      }))
-    : [];
+function normaliseItems(serverData) {
+  const rawList = Array.isArray(serverData) 
+    ? serverData 
+    : (serverData?.items || serverData?.cartItems || []);
+
+  return rawList.map((dto) => ({
+    id:        dto.cartItemId || dto.id,       // CRITICAL: Used for PUT and DELETE requests
+    productId: dto.productId,                  // Kept in state for seller aggregation
+    name:      dto.productName || dto.name || "Product",
+    price:     parseFloat(dto.unitPrice ?? dto.price ?? 0),
+    image:     dto.productImageUrl || dto.image || dto.image_url || "../images/placeholder.png",
+    quantity:  parseInt(dto.quantity || 1, 10),
+  }));
 }
 
 function setMsg(el, text, type) {
   if (!el) return;
-  el.textContent  = text;
-  el.className    = `coupon-msg ${type}`;
+  el.textContent = text;
+  el.className   = `coupon-msg ${type}`;
 }

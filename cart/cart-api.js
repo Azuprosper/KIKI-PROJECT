@@ -5,14 +5,20 @@
 
 const BASE_URL = "https://kebab-rule-blandness.ngrok-free.dev";
 
+/* ── Helper: Retrieve Auth Token ── */
+function getAuthHeaders() {
+  const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+  return token ? { "Authorization": `Bearer ${token}` } : {};
+}
+
 /* ── Shared fetch wrapper ── */
 async function request(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
 
   const defaultHeaders = {
     "Content-Type": "application/json",
-    // ngrok tunnels require this header to bypass the browser warning page
     "ngrok-skip-browser-warning": "true",
+    ...getAuthHeaders(), // Attaches Bearer JWT token required by Authentication param
   };
 
   const response = await fetch(url, {
@@ -23,7 +29,6 @@ async function request(endpoint, options = {}) {
     },
   });
 
-  // Surface server errors as thrown Error objects
   if (!response.ok) {
     let message = `HTTP ${response.status}`;
     try {
@@ -35,7 +40,6 @@ async function request(endpoint, options = {}) {
     throw new Error(message);
   }
 
-  // 204 No Content → return null
   if (response.status === 204) return null;
 
   return response.json();
@@ -47,55 +51,57 @@ async function request(endpoint, options = {}) {
 
 /**
  * GET /api/cart
- * Fetch the full cart from the server.
- * @returns {Promise<{ items: Array }>}
+ * Fetches CartResponseDto: { cartId, items: [...], totalPrice }
  */
 export async function fetchCartFromServer() {
-  return request("/api/cart", { method: "GET" });
+  const data = await request("/api/cart", { method: "GET" });
+  
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.items)) return data.items;
+  if (Array.isArray(data.cartItems)) return data.cartItems;
+  
+  return [];
 }
 
 /**
  * POST /api/cart/items
- * Add a new item to the server cart.
- * @param {{ product_id: string|number, quantity: number }} item
- * @returns {Promise<object>}
+ * Maps strictly to AddCartItemRequest: { productId, quantity }
  */
-export async function addToCart(item) {
+export async function addToCart(productId, quantity = 1) {
   return request("/api/cart/items", {
     method: "POST",
-    body: JSON.stringify(item),
+    body: JSON.stringify({ 
+      productId: Number(productId), 
+      quantity: Number(quantity) 
+    }),
   });
 }
 
 /**
- * PATCH /api/cart/items/:id
- * Update the quantity of an existing cart item.
- * @param {string|number} id
- * @param {number} quantity
- * @returns {Promise<object>}
+ * PUT /api/cart/items/:itemId
+ * Maps to updateItemQuantity(@PathVariable Long itemId, @RequestBody UpdateCartItemRequest)
  */
-export async function updateQty(id, quantity) {
-  return request(`/api/cart/items/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify({ quantity }),
+export async function updateQty(cartItemId, quantity) {
+  return request(`/api/cart/items/${cartItemId}`, {
+    method: "PUT",
+    body: JSON.stringify({ 
+      quantity: Number(quantity) 
+    }),
   });
 }
 
 /**
- * DELETE /api/cart/items/:id
- * Remove an item from the server cart.
- * @param {string|number} id
- * @returns {Promise<null>}
+ * DELETE /api/cart/items/:itemId
+ * Maps to removeItemFromCart(@PathVariable Long itemId)
+ * Returns updated CartResponseDto
  */
-export async function removeFromCart(id) {
-  return request(`/api/cart/items/${id}`, { method: "DELETE" });
+export async function removeFromCart(cartItemId) {
+  return request(`/api/cart/items/${cartItemId}`, { method: "DELETE" });
 }
 
 /**
  * POST /api/cart/checkout
- * Submit the cart for checkout.
- * @param {{ coupon?: string }} payload
- * @returns {Promise<object>}
  */
 export async function submitCart(payload = {}) {
   return request("/api/cart/checkout", {

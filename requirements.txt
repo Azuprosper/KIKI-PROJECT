@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+requests
+sentence-transformers
+transformers
+numpy
+torch
+torchvision
+Pillow
+groq
+pydantic
+python-multipart
+urllib3

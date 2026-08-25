@@ -41,8 +41,8 @@ export function showContent() {
 /**
  * Render all cart item rows into <tbody>.
  * @param {Array} items
- * @param {Function} onRemove  - callback(id)
- * @param {Function} onQtyChange - callback(id, newQty)
+ * @param {Function} onRemove    - callback(cartItemId)
+ * @param {Function} onQtyChange - callback(cartItemId, newQty)
  */
 export function renderCartRows(items, onRemove, onQtyChange) {
   const tbody = cartTbody();
@@ -51,15 +51,29 @@ export function renderCartRows(items, onRemove, onQtyChange) {
   tbody.innerHTML = "";
 
   items.forEach((item) => {
-    const subtotal = (parseFloat(item.price || 0) * (item.quantity || 1)).toFixed(2);
-    const imgSrc   = item.image || item.image_url || "../images/placeholder.png";
+    // Map strictly to CartItemResponseDto fields
+    const itemId    = item.cartItemId || item.id;
+    const name      = item.productName || item.name || "Product";
+    const price     = parseFloat(item.unitPrice ?? item.price ?? 0);
+    const qty       = item.quantity || 1;
+    const subtotal  = item.subtotal ? parseFloat(item.subtotal).toFixed(2) : (price * qty).toFixed(2);
+    
+    // Resolve relative vs absolute image paths for the /cart/ subdirectory
+    let imgSrc = item.productImageUrl || item.image || item.image_url;
+    
+    if (!imgSrc || imgSrc === "undefined" || imgSrc === "null") {
+      imgSrc = "../images/placeholder.png";
+    } else if (!imgSrc.startsWith("http") && !imgSrc.startsWith("/") && !imgSrc.startsWith("../")) {
+      // Step out of the /cart/ folder for local relative paths
+      imgSrc = `../${imgSrc}`;
+    }
 
     const tr = document.createElement("tr");
-    tr.dataset.id = item.id;
+    tr.dataset.id = itemId;
 
     tr.innerHTML = `
       <td>
-        <button class="btn-remove" data-id="${item.id}" aria-label="Remove ${item.name}">
+        <button class="btn-remove" data-id="${itemId}" aria-label="Remove ${escapeHtml(name)}">
           &times;
         </button>
       </td>
@@ -67,46 +81,46 @@ export function renderCartRows(items, onRemove, onQtyChange) {
       <td>
         <img
           src="${imgSrc}"
-          alt="${escapeHtml(item.name)}"
+          alt="${escapeHtml(name)}"
           class="cart-item-img"
-          onerror="this.src='../images/placeholder.png'"
+          onerror="this.onerror=null; this.src='../images/placeholder.png';"
         />
       </td>
 
-      <td class="cart-item-name">${escapeHtml(item.name)}</td>
+      <td class="cart-item-name">${escapeHtml(name)}</td>
 
-      <td class="cart-price">$${parseFloat(item.price || 0).toFixed(2)}</td>
+      <td class="cart-price">$${price.toFixed(2)}</td>
 
       <td>
         <input
           type="number"
           class="qty-input"
-          value="${item.quantity || 1}"
+          value="${qty}"
           min="1"
           max="999"
-          data-id="${item.id}"
-          aria-label="Quantity for ${escapeHtml(item.name)}"
+          data-id="${itemId}"
+          aria-label="Quantity for ${escapeHtml(name)}"
         />
       </td>
 
-      <td class="cart-subtotal" id="subtotal-${item.id}">
+      <td class="cart-subtotal" id="subtotal-${itemId}">
         $${subtotal}
       </td>
     `;
 
     // Wire remove button
     tr.querySelector(".btn-remove").addEventListener("click", () => {
-      onRemove(item.id);
+      onRemove(itemId);
     });
 
-    // Wire quantity input  (debounced)
+    // Wire quantity input (debounced)
     const qtyInput = tr.querySelector(".qty-input");
     let debounceTimer;
     qtyInput.addEventListener("change", (e) => {
       const newQty = parseInt(e.target.value, 10);
       if (!isNaN(newQty) && newQty >= 1) {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => onQtyChange(item.id, newQty), 400);
+        debounceTimer = setTimeout(() => onQtyChange(itemId, newQty), 400);
       }
     });
 
@@ -118,9 +132,6 @@ export function renderCartRows(items, onRemove, onQtyChange) {
    Order Summary
 ════════════════════ */
 
-/**
- * Refresh the summary panel totals.
- */
 export function renderSummary() {
   const subtotal = getSubtotal();
   const discount = state.discount || 0;
@@ -130,7 +141,6 @@ export function renderSummary() {
   setText("summary-discount", discount > 0 ? `— $${discount.toFixed(2)}` : "—");
   setText("summary-total",    `$${total.toFixed(2)}`);
 
-  // Highlight shipping
   if (total === 0) setText("summary-shipping", "—");
 }
 
@@ -138,10 +148,6 @@ export function renderSummary() {
    Header Badge
 ════════════════════ */
 
-/**
- * Update the cart item count badge in the header.
- * @param {number} count
- */
 export function renderHeaderCount(count) {
   const el = headerCount();
   if (el) el.textContent = count;
@@ -151,12 +157,6 @@ export function renderHeaderCount(count) {
    Inline Subtotal
 ════════════════════ */
 
-/**
- * Update a single row's subtotal cell without a full re-render.
- * @param {string|number} id
- * @param {number} price
- * @param {number} qty
- */
 export function updateRowSubtotal(id, price, qty) {
   const cell = document.getElementById(`subtotal-${id}`);
   if (cell) {
@@ -170,12 +170,6 @@ export function updateRowSubtotal(id, price, qty) {
 
 let notifTimer;
 
-/**
- * Show a temporary notification banner.
- * @param {string} message
- * @param {'success'|'error'|'info'} type
- * @param {number} [duration=3000] ms
- */
 export function showNotification(message, type = "info", duration = 3000) {
   const el = document.getElementById("cart-notification");
   if (!el) return;

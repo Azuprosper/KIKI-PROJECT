@@ -3,15 +3,17 @@ from pydantic import BaseModel
 from typing import Optional
 import json
 import os
+from dotenv import load_dotenv, find_dotenv
 import random
 from datetime import datetime
 from groq import Groq
 
+load_dotenv(find_dotenv())
 # Single APIRouter definition
 router = APIRouter(prefix="/organization", tags=["Organization & Seller Admin"])
 
 # Initialize Groq Client securely from environment variables
-groq_client = Groq(api_key='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')
+groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 # Preset seller profiles for demo scenarios
 MOCK_SELLER_METRICS = {

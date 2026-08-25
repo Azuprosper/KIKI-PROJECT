@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv, find_dotenv
 import json
 import torch
 import requests
@@ -14,7 +15,7 @@ import urllib3
 from groq import Groq  # Make sure to run: pip install groq
 from admin_router import router as organization_router
 
-
+load_dotenv(find_dotenv())
 
 # Limit PyTorch to CPU threads suitable for a dual-core i7
 torch.set_num_threads(2)
@@ -31,7 +32,7 @@ print("Loading Embedding Model...")
 embedder = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Initialize Groq client (Cloud API driver)
-groq_client = Groq(api_key="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")
+groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 def update_embeddings_and_context():
     global PRODUCTS, product_embeddings
