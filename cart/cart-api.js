@@ -1,69 +1,50 @@
-
 const BASE_URL = "https://kebab-rule-blandness.ngrok-free.dev";
 
-
+// --- SECURITY ---
 function getAuthHeaders() {
   const token = localStorage.getItem('token') || localStorage.getItem('authToken');
   return token ? { "Authorization": `Bearer ${token}` } : {};
 }
 
-/* ── Shared fetch wrapper ── */
+// --- MASTER FETCH WRAPPER ---
 async function request(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
 
-  const defaultHeaders = {
+  const headers = {
     "Content-Type": "application/json",
     "ngrok-skip-browser-warning": "true",
-    ...getAuthHeaders(), // Attaches Bearer JWT token required by Authentication param
+    ...getAuthHeaders(),
+    ...(options.headers || {}),
   };
 
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...defaultHeaders,
-      ...(options.headers || {}),
-    },
-  });
+  const response = await fetch(url, { ...options, headers });
 
   if (!response.ok) {
     let message = `HTTP ${response.status}`;
     try {
       const errBody = await response.json();
-      message = errBody?.detail || errBody?.message || message;
+      message = errBody.detail || errBody.message || message;
     } catch {
-      /* body not JSON — keep generic message */
+      // Fails silently if the server doesn't return JSON text
     }
     throw new Error(message);
   }
 
+  // 204 No Content means success, but no data to parse
   if (response.status === 204) return null;
-
   return response.json();
 }
 
-/* ════════════════════════════════════════════
-   API HANDLERS
-════════════════════════════════════════════ */
+// --- API ENDPOINTS ---
 
-/**
- * GET /api/cart
- * Fetches CartResponseDto: { cartId, items: [...], totalPrice }
- */
 export async function fetchCartFromServer() {
   const data = await request("/api/cart", { method: "GET" });
   
   if (!data) return [];
   if (Array.isArray(data)) return data;
-  if (Array.isArray(data.items)) return data.items;
-  if (Array.isArray(data.cartItems)) return data.cartItems;
-  
-  return [];
+  return data.items || data.cartItems || [];
 }
 
-/**
- * POST /api/cart/items
- * Maps strictly to AddCartItemRequest: { productId, quantity }
- */
 export async function addToCart(productId, quantity = 1) {
   return request("/api/cart/items", {
     method: "POST",
@@ -74,10 +55,6 @@ export async function addToCart(productId, quantity = 1) {
   });
 }
 
-/**
- * PUT /api/cart/items/:itemId
- * Maps to updateItemQuantity(@PathVariable Long itemId, @RequestBody UpdateCartItemRequest)
- */
 export async function updateQty(cartItemId, quantity) {
   return request(`/api/cart/items/${cartItemId}`, {
     method: "PUT",
@@ -87,19 +64,11 @@ export async function updateQty(cartItemId, quantity) {
   });
 }
 
-/**
- * DELETE /api/cart/items/:itemId
- * Maps to removeItemFromCart(@PathVariable Long itemId)
- * Returns updated CartResponseDto
- */
 export async function removeFromCart(cartItemId) {
   return request(`/api/cart/items/${cartItemId}`, { method: "DELETE" });
 }
 
-
-export async function submitCart(payload = {}) {
-  return request("/api/cart/checkout", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export async function submitCart() {
+  // Removed the payload parameter since we no longer pass coupon codes
+  return request("/api/cart/checkout", { method: "POST" });
 }

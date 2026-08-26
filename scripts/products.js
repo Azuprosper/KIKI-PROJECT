@@ -1,4 +1,4 @@
-// Inside scripts/products.js
+
 import { addToCart as apiAddToCart, fetchCartFromServer } from "../cart/cart-api.js";
 
 export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';

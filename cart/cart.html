@@ -79,11 +79,18 @@
       <div class="skeleton-row"></div>
     </div>
 
-    <!-- ── EMPTY CART STATE ── -->
+   
     <div id="cart-empty" class="cart-empty hidden">
-      <div class="empty-icon">🛒</div>
+      <div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="1.5">
+    <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke-linecap="round"></path>
+    <path d="M6 6H8M22 6H18.5" stroke-linecap="round"></path>
+    <path d="M10.5 3L13.5 6M13.5 6L16.5 9M13.5 6L10.5 9M13.5 6L16.5 3" stroke-linecap="round"></path>
+    <circle cx="6" cy="20" r="2"></circle>
+    <circle cx="17" cy="20" r="2"></circle>
+    <path d="M8 20L15 20" stroke-linecap="round"></path>
+    <path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" stroke-linecap="round"></path>
+</svg></div>
       <h2>Your cart is empty</h2>
-      <p>Looks like you haven't added anything yet.</p>
       <a href="../index.html" class="btn-primary">Continue Shopping</a>
     </div>
 
@@ -118,24 +125,9 @@
       <!-- Bottom Row: Coupon | Totals -->
       <div class="cart-bottom-row">
 
-        <!-- Coupon -->
-        <div class="coupon-box">
-          <h3>Apply Coupon</h3>
-          <div class="coupon-input-row">
-            <input
-              type="text"
-              id="coupon-input"
-              placeholder="Enter coupon code"
-              autocomplete="off"
-            />
-            <button id="btn-apply-coupon" class="btn-primary">Apply</button>
-          </div>
-          <p id="coupon-msg" class="coupon-msg"></p>
-        </div>
-
         <!-- Order Summary -->
         <div class="order-summary">
-          <h3>Cart Totals</h3>
+          <h3>Cart Total</h3>
           <table class="summary-table">
             <tr>
               <td>Subtotal</td>
@@ -143,7 +135,7 @@
             </tr>
             <tr>
               <td>Discount</td>
-              <td id="summary-discount" class="discount-cell">— $0.00</td>
+              <td id="summary-discount" class="discount-cell">—</td>
             </tr>
             <tr>
               <td>Shipping</td>
@@ -166,31 +158,34 @@
   <footer class="kiki-footer">
     <div class="footer-inner">
       <div class="footer-col">
-        <img src="../images/kiki-logo.webp" alt="Kiki Logo" class="footer-logo" />
+        <img src="../images/kiki-logo.webp" alt="Kiki Logo" class="footer-logo">
         <p class="footer-tagline">THE BEST E-COMMERCE PLATFORM</p>
       </div>
       <div class="footer-col">
         <h4>Quick Links</h4>
-        <a href="../index.html">Home</a>
-        <a href="#">Shop</a>
-        <a href="#">About</a>
-        <a href="#">Contact</a>
+        <a href="../index.html">Continue Shopping</a>
+        <a href="../privacypolicy.html">Privacy Policy</a>
       </div>
       <div class="footer-col">
         <h4>My Account</h4>
         <a href="../account-info.html">My Account</a>
-        <a href="cart.html">View Cart</a>
-        <a href="#">Track My Order</a>
-        <a href="#">Help</a>
       </div>
-    </div>
-    <div class="footer-copy">
-      <p>© 2024 KIKI E-Commerce. All rights reserved.</p>
     </div>
   </footer>
 
 
   <script type="module" src="cart.js"></script>
 
+  
+  <div id="confirm-modal" class="confirm-modal-overlay hidden">
+    <div class="confirm-modal-content">
+    <h3>Clear Cart?</h3>
+    <p>Are you sure you want to remove all items from your cart?</p>
+      <div class="confirm-modal-actions">
+        <button id="confirm-no" class="btn-outline">Cancel</button>
+        <button id="confirm-yes" class="btn-danger">Yes, Clear It</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
