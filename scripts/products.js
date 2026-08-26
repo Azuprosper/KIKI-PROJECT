@@ -82,8 +82,6 @@ export async function loadProducts(searchKeyword = '') {
 
           btn.textContent = 'Added!';
         } catch (err) {
-          console.error("Failed to add product to backend cart:", err);
-          alert("Could not add item to cart. Please check if you are logged in.");
           btn.textContent = 'Add to Cart';
         } finally {
           setTimeout(() => {
