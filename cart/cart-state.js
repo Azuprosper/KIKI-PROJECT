@@ -47,7 +47,7 @@ export function getSubtotal() {
 }
 
 export function getTotal() {
-  // Since coupons are disabled, the total is simply the subtotal
+  
   return getSubtotal();
 }
 

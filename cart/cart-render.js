@@ -38,7 +38,7 @@ export function renderCartRows(items, onRemove, onQtyChange) {
     const itemId   = item.cartItemId || item.id;
     const name     = item.productName || item.name || "Product";
     
-    const organizationName = item.organizationName ; 
+    const organizationName = item.store; 
     
     const price    = parseFloat(item.unitPrice ?? item.price ?? 0);
     const qty      = item.quantity || 1;

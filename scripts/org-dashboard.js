@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('edit-product-id').value = ''; 
             document.getElementById('image-preview-container').style.display = 'none';
             document.getElementById('image-preview').src = '';
-
             document.querySelector('#product-modal h2').textContent = 'Add New Product';
             document.querySelector('.modal-submit-btn').textContent = 'Save Product';
 
@@ -265,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (confirmDeleteBtn) {
+if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', async () => {
             if (!productToDeleteId) return;
 
@@ -274,29 +273,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmDeleteBtn.disabled = true;
                 const token = localStorage.getItem('token') || localStorage.getItem('authToken');
 
-                const response = await fetch(`${PRODUCT_BASE_URL}/${productToDeleteId}`, {
+                const response = await fetch(`${PRODUCT_API_URL}/${productToDeleteId}`, {
                     method: 'DELETE',
                     headers: {
                         'ngrok-skip-browser-warning': 'true',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json' 
                     }
                 });
 
-                if (!response.ok) throw new Error('Failed to delete the product.');
+                if (!response.ok) {
+                 
+                    let backendMessage = 'Failed to delete the product.';
+                    try {
+                        const errorData = await response.json();
+                        backendMessage = errorData.message || backendMessage;
+                    } catch (e) {
+                        backendMessage = `Server Error: ${response.status}`;
+                    }
+                    throw new Error(backendMessage);
+                }
 
                 const newProducts = allProducts.filter(product => String(product.id) !== String(productToDeleteId));
                 updateAllProducts(newProducts);
                 renderProducts(newProducts);
 
                 if (deleteModal) deleteModal.style.display = 'none';
+                
+                // ONLY clear the ID if the deletion actually worked { AZU }
+                productToDeleteId = null;
 
             } catch (error) {
                 console.error("Error deleting product:", error);
-                alert(error.message); 
+                alert(`Cannot delete: ${error.message}`); 
             } finally {
+                
                 confirmDeleteBtn.textContent = 'Yes, Delete';
                 confirmDeleteBtn.disabled = false;
-                productToDeleteId = null;
             }
         });
     }
