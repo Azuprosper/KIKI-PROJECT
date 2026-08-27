@@ -2,7 +2,7 @@ import { addToCart as apiAddToCart, fetchCartFromServer } from "../cart/cart-api
 
 export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
 
-// Sync initial badge count from Java backend DTO
+
 export async function syncCartBadge() {
   const badge = document.querySelector('.cart-quantity');
   if (!badge) return;
