@@ -1,8 +1,10 @@
 import { API_URL as PRODUCT_API_URL, loadProducts } from "./products.js";
 import { API_URL as CHAT_API_URL, toggleChat, appendMessage, handleSend, handleImageUpload } from "./chatbot.js";
-
+// You might need to adjust the path depending on where cart-api.js is saved!
+import { addToCart } from "../cart/cart-api.js";
 
 loadProducts();
+
 
 const accountBtn = document.getElementById('account-btn');
 const dropdown = document.getElementById('account-dropdown');
@@ -69,10 +71,53 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide "Sell with us" if they are already an organization { AZU }
         if ((userRole === 'ORGANIZATION') && dropdownSellOption) {
             dropdownSellOption.style.display = 'none';
-        }
+        }  
     }
-});
+    const productsContainer = document.getElementById('products-container');
+        const authModal = document.getElementById('auth-modal');
+        const closeModalBtn = document.getElementById('close-auth-modal');
 
+       
+       
+        const updateCartBadge = () => {
+            try {
+                const savedCart = localStorage.getItem('kiki_cart_v1');
+                if (savedCart) {
+                    const data = JSON.parse(savedCart);
+                    const items = data.items || [];
+                    const totalCount = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+                    const cartBadges = document.querySelectorAll('.cart-quantity');
+                    cartBadges.forEach(badge => {
+                        badge.textContent = totalCount;
+                    });
+                }
+            } catch (err) {
+                console.warn("Could not load cart badge data:", err);
+            }
+        };
+
+       
+        updateCartBadge();
+
+       
+       
+       if (productsContainer) {
+            productsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    
+                    if (!token) {
+                        // Not logged in
+                        e.preventDefault(); 
+                        e.stopImmediatePropagation(); 
+                        if (authModal) authModal.style.display = 'flex';
+                    }
+                    
+                }
+            });
+        }
+     
+
+});
 
 const handleLogout = () => {
     localStorage.removeItem('token');
@@ -84,4 +129,4 @@ const handleLogout = () => {
 const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', handleLogout);
-}
+}    

@@ -1,9 +1,8 @@
-// Inside scripts/products.js
 import { addToCart as apiAddToCart, fetchCartFromServer } from "../cart/cart-api.js";
 
 export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
 
-// Sync initial badge count from Java backend DTO
+
 export async function syncCartBadge() {
   const badge = document.querySelector('.cart-quantity');
   if (!badge) return;
@@ -67,8 +66,8 @@ export async function loadProducts(searchKeyword = '') {
         const productId = parseInt(btn.dataset.productId, 10);
         
         try {
+          // Disable instantly to prevent double-clicks, no text changes
           btn.disabled = true;
-          btn.textContent = 'Adding...';
 
           const updatedCart = await apiAddToCart(productId, 1);
           const items = updatedCart?.items || updatedCart?.cartItems || [];
@@ -80,16 +79,11 @@ export async function loadProducts(searchKeyword = '') {
           }
           localStorage.setItem('cartCount', totalCount);
 
-          btn.textContent = 'Added!';
         } catch (err) {
-          console.error("Failed to add product to backend cart:", err);
-          alert("Could not add item to cart. Please check if you are logged in.");
-          btn.textContent = 'Add to Cart';
+          console.error("Failed to add to cart:", err);
         } finally {
-          setTimeout(() => {
-            btn.disabled = false;
-            btn.textContent = 'Add to Cart';
-          }, 1000);
+  
+          btn.disabled = false;
         }
       });
     });

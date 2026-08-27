@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
             logoLink.href = 'index.html';
         }
     }
-
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -56,5 +55,59 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (error) {
         console.error("Network error while fetching account info:", error);
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const triggerBtn = document.getElementById('trigger-delete-btn');
+    const modal = document.getElementById('delete-modal');
+    const cancelBtn = document.getElementById('cancel-delete-btn');
+    const confirmBtn = document.getElementById('confirm-delete-btn');
+
+    if (triggerBtn && modal) {
+        triggerBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.remove('delete-acc-hidden');
+        });
+    }
+
+    if (cancelBtn && modal) {
+        cancelBtn.addEventListener('click', () => {
+            modal.classList.add('delete-acc-hidden');
+        });
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', async () => {
+            confirmBtn.textContent = 'Deleting...';
+            confirmBtn.disabled = true;
+
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+
+            try {
+                const response = await fetch('https://kebab-rule-blandness.ngrok-free.dev/api/users/me', {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    }
+                });
+
+                // if (!response.ok) {
+                //     throw new Error('Failed to delete account from server.');
+                // }
+
+                localStorage.clear();
+                window.location.href = 'index.html'; 
+
+            } catch (error) {
+                console.error("Deletion Error:", error);
+                
+                confirmBtn.textContent = 'Yes, Delete';
+                confirmBtn.disabled = false;
+                modal.classList.add('delete-acc-hidden');
+            }
+        });
     }
 });

@@ -1,9 +1,3 @@
-/* ════════════════════════════════════════════
-   KIKI — CART MAIN ORCHESTRATOR
-   CartPage = f(state) = dispatch(fetch(authenticate(endpoint)))
-             = Σ(UI + API + State + Auth)
-════════════════════════════════════════════ */
-
 import {
   state,
   setState,
@@ -35,14 +29,9 @@ import {
   setCheckoutLoading,
 } from "./cart-render.js";
 
-/* ════════════════════════════════════════════
-   INITIALISE
-════════════════════════════════════════════ */
-
 document.addEventListener("DOMContentLoaded", () => {
   initAccountDropdown();
   initCart();
-  initCoupon();
   initCheckout();
   initClearCart();
 });
@@ -58,7 +47,6 @@ async function initCart() {
     const serverData = await fetchCartFromServer();
     const items = normaliseItems(serverData);
 
-    // If server returned items, sync state. Otherwise keep local cache if available.
     if (items.length > 0) {
       setItems(items);
     } else {
@@ -70,9 +58,7 @@ async function initCart() {
       }
     }
   } catch (err) {
-    console.error("[cart] Failed to fetch cart from server:", err.message);
-    
-    // Fallback to offline/localStorage cache instead of wiping out items
+    console.error("Failed to fetch cart from server:", err.message);
     const cached = loadFromLocalStorage();
     if (cached && cached.items) {
       setItems(cached.items);
@@ -83,10 +69,6 @@ async function initCart() {
     renderAll();
   }
 }
-
-/* ════════════════════════════════════════════
-   RENDER ORCHESTRATION
-════════════════════════════════════════════ */
 
 function renderAll() {
   if (!state.items.length) {
@@ -101,12 +83,7 @@ function renderAll() {
   renderHeaderCount(getTotalCount());
 }
 
-/* ════════════════════════════════════════════
-   EVENT: REMOVE ITEM
-════════════════════════════════════════════ */
-
 async function handleRemove(id) {
-  /* Optimistic UI */
   const backup = [...state.items];
   removeItemFromState(id);
   renderAll();
@@ -115,16 +92,11 @@ async function handleRemove(id) {
     await removeFromCart(id);
     showNotification("Item removed from cart.", "success");
   } catch (err) {
-    /* Rollback on server error */
     setItems(backup);
     renderAll();
-    showNotification(`Failed to remove item: ${err.message}`, "error");
+    showNotification('Failed to remove item', "error");
   }
 }
-
-/* ════════════════════════════════════════════
-   EVENT: QUANTITY CHANGE
-════════════════════════════════════════════ */
 
 async function handleQtyChange(id, newQty) {
   const item = state.items.find((i) => String(i.id) === String(id));
@@ -132,7 +104,6 @@ async function handleQtyChange(id, newQty) {
 
   const oldQty = item.quantity;
 
-  /* Optimistic UI — update subtotal cell immediately */
   setItemQty(id, newQty);
   updateRowSubtotal(id, item.price, newQty);
   renderSummary();
@@ -141,7 +112,6 @@ async function handleQtyChange(id, newQty) {
   try {
     await updateQty(id, newQty);
   } catch (err) {
-    /* Rollback on server error */
     setItemQty(id, oldQty);
     updateRowSubtotal(id, item.price, oldQty);
     renderSummary();
@@ -245,7 +215,7 @@ async function handleCheckout() {
     const result = await submitCart(checkoutPayload);
     
     showNotification(
-      result?.message || "Order placed successfully! 🎉",
+      result?.message || "Order placed successfully!",
       "success",
       5000
     );
@@ -261,16 +231,24 @@ async function handleCheckout() {
   }
 }
 
-/* ════════════════════════════════════════════
-   CLEAR CART
-════════════════════════════════════════════ */
-
 function initClearCart() {
-  const btn = document.getElementById("btn-clear-cart");
-  if (!btn) return;
+  const btnClear = document.getElementById("btn-clear-cart");
+  const modal = document.getElementById("confirm-modal");
+  const btnYes = document.getElementById("confirm-yes");
+  const btnNo = document.getElementById("confirm-no");
 
-  btn.addEventListener("click", async () => {
-    if (!confirm("Are you sure you want to clear your cart?")) return;
+  if (!btnClear || !modal) return;
+  
+  btnClear.addEventListener("click", () => {
+    modal.classList.remove("hidden");
+  });
+
+  btnNo.addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+
+  btnYes.addEventListener("click", async () => {
+    modal.classList.add("hidden");
 
     const backup = [...state.items];
     clearState();
@@ -281,17 +259,13 @@ function initClearCart() {
       await Promise.all(backup.map((i) => removeFromCart(i.id)));
       showNotification("Cart cleared.", "info");
     } catch (err) {
-      console.warn("[cart] Partial clear error:", err.message);
+      console.warn("Partial clear error:", err.message);
     }
   });
 }
 
-/* ════════════════════════════════════════════
-   ACCOUNT DROPDOWN
-════════════════════════════════════════════ */
-
 function initAccountDropdown() {
-  const btn      = document.getElementById("account-btn");
+  const btn = document.getElementById("account-btn");
   const dropdown = document.getElementById("account-dropdown");
   if (!btn || !dropdown) return;
 
@@ -329,7 +303,6 @@ function normaliseItems(serverData) {
     organization_name: dto.organization_name || dto.organizationName || null
   }));
 }
-
 function setMsg(el, text, type) {
   if (!el) return;
   el.textContent = text;

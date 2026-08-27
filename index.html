@@ -7,7 +7,7 @@
     <!-- Responsive design meta tag -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Google Fonts & Stylesheets -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -23,7 +23,6 @@
         
         <div class="header-right-actions">
 
-    <!-- 1. GUEST VIEW: Sign In and Sell on Kiki (Cart is hidden here) -->
     <div id="guest-header-actions" class="header-auth-buttons" style="display: none;">
         <button class="header-action-btn" onclick="window.location.href='login.html'">Sign In</button>
         <button class="header-action-btn" onclick="window.location.href='org-register.html'">Sell on Kiki</button>
@@ -50,7 +49,7 @@
   
     <a href="cart/cart.html" class="cart-link" id="logged-in-cart" style="display: none;">
         <img src="images/icons/cart-icon.png" class="cart-icon">
-        <span class="cart-quantity">0</span>
+        <span class="cart-quantity"></span>
         <span class="cart-text">Cart</span>
     </a>
 </div>
@@ -112,5 +111,17 @@
     </div>
   </div>
 
+
+  
+<div id="auth-modal" class="auth-modal-overlay" style="display: none;">
+    <div class="auth-modal-content">
+        <button class="close-auth-modal" id="close-auth-modal">&times;</button>
+        <h3>You aren't logged in.</h3>
+        <p>KIKI says To add items to your cart and shop on Kiki, you need to be signed in to your account.</p>
+        <div class="auth-modal-actions">
+            <button class="modal-login-btn" onclick="window.location.href='login.html'">Log In</button>
+        </div>
+    </div>
+</div>
   </body>
 </html>

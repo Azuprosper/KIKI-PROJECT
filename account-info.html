@@ -56,11 +56,22 @@
                 <span class="info-label">Phone Number</span>
                 <span id="info-phone" class="info-value">Loading...</span>
             </div>
+            <button class="delete-acc-btn" id="trigger-delete-btn">Delete Account</button>
         </div>
       </div>
     </div>
 
           <script src="scripts/account-info.js"></script>
 
+
+  <div id="delete-modal" class="delete-acc-overlay delete-acc-hidden">
+  <div class="delete-acc-content">
+    <h3 class="delete-acc-danger-text">Are you sure?.</h3>
+    <div class="delete-acc-actions">
+      <button id="cancel-delete-btn" class="delete-acc-btn-cancel">Cancel</button>
+      <button id="confirm-delete-btn" class="delete-acc-btn-confirm">Yes, Delete</button>
+    </div>
+  </div>
+</div>
         
   </body>
