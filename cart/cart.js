@@ -213,9 +213,10 @@ function normaliseItems(serverData) {
     : (serverData?.items || serverData?.cartItems || []);
 
   return rawList.map((dto) => ({
-    id: dto.cartItemId || dto.id,
+    id: dto.id,
     productId: dto.productId,
-    name: dto.productName || dto.name || "Product",
+    name: dto.productName,
+    organizationName: dto.organizationName,
     price: parseFloat(dto.unitPrice ?? dto.price ?? 0),
     image: dto.productImageUrl || dto.image || dto.image_url || "../images/placeholder.png",
     quantity: parseInt(dto.quantity || 1, 10),

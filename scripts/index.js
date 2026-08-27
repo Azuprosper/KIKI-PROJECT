@@ -1,8 +1,10 @@
 import { API_URL as PRODUCT_API_URL, loadProducts } from "./products.js";
 import { API_URL as CHAT_API_URL, toggleChat, appendMessage, handleSend, handleImageUpload } from "./chatbot.js";
-
+// You might need to adjust the path depending on where cart-api.js is saved!
+import { addToCart } from "../cart/cart-api.js";
 
 loadProducts();
+
 
 const accountBtn = document.getElementById('account-btn');
 const dropdown = document.getElementById('account-dropdown');
@@ -76,31 +78,43 @@ document.addEventListener('DOMContentLoaded', () => {
         const closeModalBtn = document.getElementById('close-auth-modal');
 
        
-        if (productsContainer) {
+       
+        const updateCartBadge = () => {
+            try {
+                const savedCart = localStorage.getItem('kiki_cart_v1');
+                if (savedCart) {
+                    const data = JSON.parse(savedCart);
+                    const items = data.items || [];
+                    const totalCount = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+                    const cartBadges = document.querySelectorAll('.cart-quantity');
+                    cartBadges.forEach(badge => {
+                        badge.textContent = totalCount;
+                    });
+                }
+            } catch (err) {
+                console.warn("Could not load cart badge data:", err);
+            }
+        };
+
+       
+        updateCartBadge();
+
+       
+       
+       if (productsContainer) {
             productsContainer.addEventListener('click', (e) => {
                 if (e.target.classList.contains('add-to-cart-btn')) {
                     
                     if (!token) {
-                        // Not logged in: Stop the cart logic, show modal{ AZU }
+                        // Not logged in
                         e.preventDefault(); 
+                        e.stopImmediatePropagation(); 
                         if (authModal) authModal.style.display = 'flex';
-                    } else {
-                      
-                        const productId = e.target.getAttribute('data-product-id');
-                        console.log("Proceeding to add product to cart:", productId);
-                        
                     }
+                    
                 }
             });
         }
-
-        //  Modal Close { AZU }
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', () => authModal.style.display = 'none');
-        }
-        window.addEventListener('click', (e) => {
-            if (e.target === authModal) authModal.style.display = 'none';
-        });
      
 
 });
@@ -115,8 +129,4 @@ const handleLogout = () => {
 const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', handleLogout);
-}
-
-
-
-    
+}    

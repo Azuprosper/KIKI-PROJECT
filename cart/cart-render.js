@@ -37,11 +37,14 @@ export function renderCartRows(items, onRemove, onQtyChange) {
   items.forEach((item) => {
     const itemId   = item.cartItemId || item.id;
     const name     = item.productName || item.name || "Product";
+    
+    const organizationName = item.organizationName ; 
+    
     const price    = parseFloat(item.unitPrice ?? item.price ?? 0);
     const qty      = item.quantity || 1;
     const subtotal = (price * qty).toFixed(2);
     
-    // Clean up backend image strings
+    
     let imgSrc = item.productImageUrl || item.image || item.image_url || "../images/placeholder.png";
     if (imgSrc.includes("undefined") || imgSrc.includes("null")) {
       imgSrc = "../images/placeholder.png";
@@ -51,7 +54,7 @@ export function renderCartRows(items, onRemove, onQtyChange) {
 
     const tr = document.createElement("tr");
     tr.dataset.id = itemId;
-
+    
     tr.innerHTML = `
       <td>
         <button class="btn-remove" data-id="${itemId}" aria-label="Remove ${escapeHtml(name)}">&times;</button>
@@ -60,6 +63,7 @@ export function renderCartRows(items, onRemove, onQtyChange) {
         <img src="${imgSrc}" alt="${escapeHtml(name)}" class="cart-item-img" onerror="this.onerror=null; this.src='../images/placeholder.png';" />
       </td>
       <td class="cart-item-name">${escapeHtml(name)}</td>
+      <td class="cart-item-store">${escapeHtml(organizationName)}</td>
       <td class="cart-price">$${price.toFixed(2)}</td>
       <td>
         <input type="number" class="qty-input" value="${qty}" min="1" max="999" data-id="${itemId}" />
@@ -67,7 +71,7 @@ export function renderCartRows(items, onRemove, onQtyChange) {
       <td class="cart-subtotal" id="subtotal-${itemId}">$${subtotal}</td>
     `;
 
-    // Attach Event Listeners
+   
     tr.querySelector(".btn-remove").addEventListener("click", () => onRemove(itemId));
 
     const qtyInput = tr.querySelector(".qty-input");
@@ -91,7 +95,7 @@ export function renderSummary() {
   const subtotal = getSubtotal();
 
   setText("summary-subtotal", `$${subtotal.toFixed(2)}`);
-  setText("summary-discount", "—"); // Hardcoded to dash since coupons are disabled
+  setText("summary-discount", "—"); 
   setText("summary-total", `$${subtotal.toFixed(2)}`);
 
   if (subtotal === 0) setText("summary-shipping", "—");

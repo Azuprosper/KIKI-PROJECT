@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
         registerButton.addEventListener('click', async (e) => {
             e.preventDefault();
 
-            if (generalError) generalError.textContent = '';
+            // 1. Clear ALL previous errors first { AZU }
+            document.querySelectorAll('.error-message').forEach(div => {
+                div.textContent = '';
+            });
 
             const payload = {
                 orgName: document.getElementById('org-brand-name').value.trim(),
@@ -26,10 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 registerButton.textContent = 'Registering Organization...';
 
                 const response = await fetch(API_URL, {
-                    method: 'POST', // Must be POST
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true' // Prevents ngrok from blocking JSON payload requests{ AZU }
+                        'ngrok-skip-browser-warning': 'true'
                     },
                     body: JSON.stringify(payload)
                 });
@@ -38,13 +41,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = responseText ? JSON.parse(responseText) : {};
 
                 if (!response.ok) {
-                    throw new Error(data.message || 'Registration failed.'); 
+                    
+                    const errorMap = {
+                        orgName: 'js-brand-name',
+                        orgDescription: 'js-org-description',
+                        contactFirstName: 'js-firstname',
+                        contactLastName: 'js-lastname',
+                        username: 'js-username',
+                        email: 'js-email',
+                        phoneNumber: 'js-number',
+                        password: 'js-password'
+                    };
+
+                    let hasFieldErrors = false;
+                    
+                   
+                    const fieldErrors = data.errors || data; 
+
+                  
+                    for (const [backendField, domId] of Object.entries(errorMap)) {
+                        if (fieldErrors[backendField]) {
+                            const errorDiv = document.getElementById(domId);
+                            if (errorDiv) {
+                                errorDiv.textContent = fieldErrors[backendField];
+                                errorDiv.style.color = 'red';
+                                hasFieldErrors = true;
+                            }
+                        }
+                    }
+
+              
+                    if (hasFieldErrors) {
+                        throw new Error("VALIDATION_FAILED");
+                    } else {
+                        throw new Error(data.message || "Registration failed. Please check your inputs.");
+                    }
                 }
 
+               
                 window.location.href = 'login.html';
 
             } catch (error) {
-                if (generalError) {
+                
+                if (error.message !== "VALIDATION_FAILED" && generalError) {
                     generalError.textContent = error.message;
                     generalError.style.color = 'red';
                 }

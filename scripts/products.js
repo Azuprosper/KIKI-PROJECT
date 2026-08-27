@@ -1,4 +1,3 @@
-
 import { addToCart as apiAddToCart, fetchCartFromServer } from "../cart/cart-api.js";
 
 export const API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
@@ -67,8 +66,8 @@ export async function loadProducts(searchKeyword = '') {
         const productId = parseInt(btn.dataset.productId, 10);
         
         try {
+          // Disable instantly to prevent double-clicks, no text changes
           btn.disabled = true;
-          btn.textContent = 'Adding...';
 
           const updatedCart = await apiAddToCart(productId, 1);
           const items = updatedCart?.items || updatedCart?.cartItems || [];
@@ -80,14 +79,11 @@ export async function loadProducts(searchKeyword = '') {
           }
           localStorage.setItem('cartCount', totalCount);
 
-          btn.textContent = 'Added!';
         } catch (err) {
-          btn.textContent = 'Add to Cart';
+          console.error("Failed to add to cart:", err);
         } finally {
-          setTimeout(() => {
-            btn.disabled = false;
-            btn.textContent = 'Add to Cart';
-          }, 1000);
+  
+          btn.disabled = false;
         }
       });
     });

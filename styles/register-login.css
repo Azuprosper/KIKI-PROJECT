@@ -103,8 +103,84 @@ body {
   font-weight: 500;
   color: #111111;
 }
+.delete-acc-btn{
+  padding-top: 2%;
+  padding-bottom: 2%;
+  border-radius: 6px;
+  border: none;
+  background-color: rgb(206, 118, 118);
+  cursor:pointer;
+}
+.delete-acc-btn:hover{
+  /* opacity: 0.9; */
+  background-color: rgb(133, 77, 77);
+}
+.delete-acc-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
 
+.delete-acc-hidden {
+  display: none !important;
+}
 
+.delete-acc-content {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.delete-acc-danger-text {
+  color: rgb(208, 63, 63);
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.delete-acc-content p {
+  color: rgb(85, 85, 85);
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.delete-acc-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.delete-acc-btn-cancel {
+  background: transparent;
+  border: 1px solid rgb(200, 200, 200);
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: rgb(51, 51, 51);
+}
+
+.delete-acc-btn-confirm {
+  background: rgb(206, 118, 118);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+.delete-acc-btn-confirm:hover{
+  /* opacity: 0.9; */
+  background-color: rgb(133, 77, 77);
+}
 @media (max-width: 768px) {
   .account-container {
     flex-direction: column; 

@@ -69,6 +69,6 @@ export async function removeFromCart(cartItemId) {
 }
 
 export async function submitCart() {
-  // Removed the payload parameter since we no longer pass coupon codes
+ 
   return request("/api/cart/checkout", { method: "POST" });
 }

@@ -3,7 +3,7 @@ import { API_URL as CHAT_API_URL, toggleChat, appendMessage, handleSend, handleI
 // import { loadMyProducts } from "./products.js";
 
 const PRODUCT_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
-const UPLOAD_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/uploads/image';
+const UPLOAD_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products/image';
 const ORG_PROFILE_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/organizations/me';
 
 loadMyProducts();
