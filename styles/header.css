@@ -55,11 +55,12 @@ header .header-right-actions {
     padding: 8px 12px;
     border-radius: 4px;
     font-size: 16px;
-    font-family: inherit; /* Ensures it inherits Roboto font */
+    font-family: inherit; 
 }
 
 .header-action-btn:hover {
     background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
 }
 
 /* --- Logged-in Account Dropdown Styles --- */
@@ -83,6 +84,7 @@ header .user-actions {
 
 header .user-actions:hover {
     background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
 }
 
 header .dropdown-menu {
@@ -120,6 +122,7 @@ header .dropdown-links a {
 
 header .dropdown-links a:hover {
     text-decoration: underline;
+    transform: translateY(-1px);
 }
 
 header .cart-link {

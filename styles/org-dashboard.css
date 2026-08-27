@@ -37,6 +37,7 @@
 .add-product-btn:hover,
 .modal-submit-btn:hover{
     background-color: rgb(0, 58, 167);
+    transform: translateY(-1px);
 }
 
 
@@ -147,6 +148,7 @@
 }
 .delete-product-btn:hover{
     background-color: rgb(133, 77, 77);
+    transform: translateY(-1px);
 }
 .update-product-btn{
     background-color: rgb(20, 118, 118);
@@ -159,6 +161,7 @@
 }
 .update-product-btn:hover{
     background-color: rgb(15, 84, 84);
+    transform: translateY(-1px);
 }
 /* the modal that pops up on updating a product{Azu} */
 #product-modal .modal-content {
