@@ -29,7 +29,6 @@ import {
   setCheckoutLoading,
 } from "./cart-render.js";
 
-// --- INITIALISE ---
 document.addEventListener("DOMContentLoaded", () => {
   initAccountDropdown();
   initCart();
@@ -37,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initClearCart();
 });
 
-// --- CART FETCHING ---
 async function initCart() {
   showLoading();
 
@@ -68,7 +66,6 @@ async function initCart() {
   }
 }
 
-// --- RENDER SCREEN ---
 function renderAll() {
   if (!state.items.length) {
     showEmpty();
@@ -82,9 +79,7 @@ function renderAll() {
   renderHeaderCount(getTotalCount());
 }
 
-// --- USER ACTIONS ---
 async function handleRemove(id) {
-  // Optimistic UI update: Remove immediately, restore if server fails
   const backup = [...state.items];
   removeItemFromState(id);
   renderAll();
@@ -95,7 +90,7 @@ async function handleRemove(id) {
   } catch (err) {
     setItems(backup);
     renderAll();
-    showNotification(`Failed to remove item: ${err.message}`, "error");
+    showNotification('Failed to remove item', "error");
   }
 }
 
@@ -105,7 +100,6 @@ async function handleQtyChange(id, newQty) {
 
   const oldQty = item.quantity;
 
-  // Optimistic UI update
   setItemQty(id, newQty);
   updateRowSubtotal(id, item.price, newQty);
   renderSummary();
@@ -122,7 +116,6 @@ async function handleQtyChange(id, newQty) {
   }
 }
 
-// --- CHECKOUT ---
 function initCheckout() {
   const btn = document.getElementById("btn-checkout");
   if (!btn) return;
@@ -154,7 +147,6 @@ async function handleCheckout() {
   }
 }
 
-// --- CLEAR ENTIRE CART ---
 function initClearCart() {
   const btnClear = document.getElementById("btn-clear-cart");
   const modal = document.getElementById("confirm-modal");
@@ -162,17 +154,14 @@ function initClearCart() {
   const btnNo = document.getElementById("confirm-no");
 
   if (!btnClear || !modal) return;
-
   
   btnClear.addEventListener("click", () => {
     modal.classList.remove("hidden");
   });
 
-
   btnNo.addEventListener("click", () => {
     modal.classList.add("hidden");
   });
-
 
   btnYes.addEventListener("click", async () => {
     modal.classList.add("hidden");
@@ -190,7 +179,6 @@ function initClearCart() {
   });
 }
 
-// --- UI HELPERS ---
 function initAccountDropdown() {
   const btn = document.getElementById("account-btn");
   const dropdown = document.getElementById("account-dropdown");
@@ -206,17 +194,16 @@ function initAccountDropdown() {
   });
 }
 
-// Ensure server data matches our expected frontend format
 function normaliseItems(serverData) {
   const rawList = Array.isArray(serverData) 
     ? serverData 
     : (serverData?.items || serverData?.cartItems || []);
 
   return rawList.map((dto) => ({
-    id: dto.id,
+    id: dto.cartItemId || dto.id,
     productId: dto.productId,
-    name: dto.productName,
-    organizationName: dto.organizationName,
+    name: dto.productName || "Product",
+    store: dto.organizationName || "Kiki Stores",
     price: parseFloat(dto.unitPrice ?? dto.price ?? 0),
     image: dto.productImageUrl || dto.image || dto.image_url || "../images/placeholder.png",
     quantity: parseInt(dto.quantity || 1, 10),
