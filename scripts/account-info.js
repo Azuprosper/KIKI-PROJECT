@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (confirmBtn) {
+  if (confirmBtn) {
         confirmBtn.addEventListener('click', async () => {
             confirmBtn.textContent = 'Deleting...';
             confirmBtn.disabled = true;
@@ -94,15 +94,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                // if (!response.ok) {
-                //     throw new Error('Failed to delete account from server.');
-                // }
+                
+                if (!response.ok) {
+                    let backendMessage = 'Failed to delete account from server.';
+                    try {
+                        const errorData = await response.json();
+                        backendMessage = errorData.message || backendMessage;
+                    } catch (e) {
+                        backendMessage = `Server Error: ${response.status}`;
+                    }
+                    throw new Error(backendMessage);
+                }
 
                 localStorage.clear();
                 window.location.href = 'index.html'; 
 
             } catch (error) {
                 console.error("Deletion Error:", error);
+                
+                alert(`Cannot delete account: ${error.message}`);
                 
                 confirmBtn.textContent = 'Yes, Delete';
                 confirmBtn.disabled = false;

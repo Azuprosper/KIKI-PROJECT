@@ -1,6 +1,5 @@
 import { ORG_PRODUCTS_API_URL, PRODUCT_BASE_URL, loadMyProducts, allProducts, renderProducts, updateAllProducts } from "./org-products.js";
 import { API_URL as CHAT_API_URL, toggleChat, appendMessage, handleSend, handleImageUpload } from "./chatbot.js";
-// import { loadMyProducts } from "./products.js";
 
 const PRODUCT_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
 const UPLOAD_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products/image';
@@ -15,13 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const accountDropdown = document.getElementById('account-dropdown');
 
     if (accountBtn && accountDropdown) {
-        // Toggle dropdown on button click
         accountBtn.addEventListener('click', (event) => {
-            event.stopPropagation(); // Stop click from bubbling up to the window
+            event.stopPropagation(); 
             accountDropdown.style.display = (accountDropdown.style.display === 'block') ? 'none' : 'block';
         });
 
-        // Close dropdown when clicking outside of it
         window.addEventListener('click', (event) => {
             if (accountDropdown.style.display === 'block' && !accountBtn.contains(event.target) && !accountDropdown.contains(event.target)) {
                 accountDropdown.style.display = 'none';
@@ -29,36 +26,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
- 
     const modal = document.getElementById('product-modal');
     const openBtn = document.getElementById('open-add-product-modal');
     const closeBtn = document.getElementById('close-modal');
 
     if (modal && openBtn && closeBtn) {
-        // Open modal
         openBtn.addEventListener('click', () => {
             const form = document.getElementById('add-product-form');
             if (form) form.reset();
 
             document.getElementById('product-modal').classList.remove('is-update-layout');
-            
-            document.getElementById('edit-product-id').value = ''; // Clear hidden ID
+            document.getElementById('edit-product-id').value = ''; 
             document.getElementById('image-preview-container').style.display = 'none';
             document.getElementById('image-preview').src = '';
             
-            // Reset text to "Add" mode
             document.querySelector('#product-modal h2').textContent = 'Add New Product';
             document.querySelector('.modal-submit-btn').textContent = 'Save Product';
 
             modal.style.display = 'flex';
         });
 
-        
         closeBtn.addEventListener('click', () => {
             modal.style.display = 'none';
         });
 
-        
         window.addEventListener('click', (event) => {
             if (event.target === modal) {
                 modal.style.display = 'none';
@@ -66,55 +57,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
     const logoutBtn = document.getElementById('logout-btn');
 
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            
             localStorage.removeItem('token');
             localStorage.removeItem('authToken'); 
             localStorage.removeItem('userRole');
-
-            
             window.location.href = 'login.html';
         });
     }
 
-  
     const imageInput = document.getElementById('product-image');
     const imagePreviewContainer = document.getElementById('image-preview-container');
     const imagePreview = document.getElementById('image-preview');
 
     if (imageInput) {
         imageInput.addEventListener('change', function(event) {
-           
             const file = event.target.files[0]; 
 
             if (file) {
-             
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
-                  
                     imagePreview.src = e.target.result;
                     imagePreviewContainer.style.display = 'block';
                 }
                 
-                // Read the file as a data URL
                 reader.readAsDataURL(file);
             } else {
-                // If they cancel the selection, hide the preview again
                 imagePreviewContainer.style.display = 'none';
                 imagePreview.src = '';
             }
         });
     }
 
-    // --- 5. SUBMIT NEW PRODUCT LOGIC (UPLOAD IMAGE FIRST, THEN CREATE PRODUCT) ---
+    // --- 5. SUBMIT NEW PRODUCT LOGIC ---
     const addProductForm = document.getElementById('add-product-form');
 
-   
     async function uploadProductImage(file, token) {
         const formData = new FormData();
         formData.append('file', file); 
@@ -124,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: {
                 'ngrok-skip-browser-warning': 'true',
                 'Authorization': `Bearer ${token}`
-                // No Content-Type here - browser sets multipart boundary automatically
             },
             body: formData
         });
@@ -143,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         addProductForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Target ALL the inputs
             const nameInput = document.querySelector('input[placeholder="Product Name"]');
             const descInput = document.querySelector('textarea[placeholder="Product Description"]');
             const priceInput = document.querySelector('input[placeholder="Price ($)"]');
@@ -157,17 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Saving...';
 
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
                 
-                // 1. Check if we are updating or creating
                 const editProductId = document.getElementById('edit-product-id').value;
                 const isUpdating = editProductId !== "";
                 
-                // Determine the correct URL and Method based on whether we are updating or adding
                 const endpointUrl = isUpdating ? `${PRODUCT_API_URL}/${editProductId}` : PRODUCT_API_URL;
                 const requestMethod = isUpdating ? 'PUT' : 'POST';
 
-                // 2. Upload the new image (ONLY if i actually picked a new file)
                 let imageUrl = null;
                 if (imageFile) {
                     submitBtn.textContent = 'Uploading image...';
@@ -176,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 submitBtn.textContent = isUpdating ? 'Updating...' : 'Saving...';
 
-                // 3. Build the payload
                 const payload = {
                     name: nameInput.value.trim(),
                     description: descInput.value.trim(),
@@ -184,17 +158,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     stockQuantity: stockInput.value.trim()
                 };
 
-                // Only attach the image field to the JSON if a new one was uploaded
                 if (imageUrl) {
                     payload.imageUrl = imageUrl;
-                }else if (isUpdating) {
+                } else if (isUpdating) {
                     const existingProduct = allProducts.find(p => String(p.id) === String(editProductId));
                     if (existingProduct && existingProduct.imageUrl) {
                         payload.imageUrl = existingProduct.imageUrl;
                     }
                 }
 
-                // 4. Send to the backend
                 const response = await fetch(endpointUrl, {
                     method: requestMethod,
                     headers: {
@@ -212,14 +184,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(data.message);
                 }
                 
-                // Clean up and close
                 addProductForm.reset();
                 document.getElementById('edit-product-id').value = '';
-                document.getElementById('product-image').required = true; // reset required rule
+                document.getElementById('product-image').required = true; 
                 document.getElementById('image-preview-container').style.display = 'none';
                 document.getElementById('product-modal').style.display = 'none';
                 
-                // Refresh the grid!
                 if (typeof loadMyProducts === "function") {
                     loadMyProducts();
                 }
@@ -236,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // FETCH AND DISPLAY ORG NAME IN HEADER 
     async function loadOrganizationProfile() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
         if (!token) return;
 
         try {
@@ -262,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    
     loadOrganizationProfile();
 
     const searchInput = document.getElementById('search-bar'); 
@@ -289,41 +258,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (confirmDeleteBtn) {
+if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', async () => {
             if (!productToDeleteId) return;
 
             try {
                 confirmDeleteBtn.textContent = 'Deleting...';
                 confirmDeleteBtn.disabled = true;
-                const token = localStorage.getItem('token');
+                
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
 
-                const response = await fetch(`${PRODUCT_BASE_URL}/${productToDeleteId}`, {
+                const response = await fetch(`${PRODUCT_API_URL}/${productToDeleteId}`, {
                     method: 'DELETE',
                     headers: {
                         'ngrok-skip-browser-warning': 'true',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json' 
                     }
                 });
 
-                if (!response.ok) throw new Error('Failed to delete the product.');
+                if (!response.ok) {
+                 
+                    let backendMessage = 'Failed to delete the product.';
+                    try {
+                        const errorData = await response.json();
+                        backendMessage = errorData.message || backendMessage;
+                    } catch (e) {
+                        backendMessage = `Server Error: ${response.status}`;
+                    }
+                    throw new Error(backendMessage);
+                }
 
-                // Filter out the deleted product and update the array in org-products.js
+                // If SUCCESSFUL: filter, update, render, and close
                 const newProducts = allProducts.filter(product => String(product.id) !== String(productToDeleteId));
                 updateAllProducts(newProducts);
-                
-                // Redraw the grid
                 renderProducts(newProducts);
                 
                 if (deleteModal) deleteModal.style.display = 'none';
+                
+                // ONLY clear the ID if the deletion actually worked { AZU }
+                productToDeleteId = null;
 
             } catch (error) {
                 console.error("Error deleting product:", error);
-                alert(error.message); 
+                alert(`Cannot delete: ${error.message}`); 
             } finally {
+                
                 confirmDeleteBtn.textContent = 'Yes, Delete';
                 confirmDeleteBtn.disabled = false;
-                productToDeleteId = null;
             }
         });
     }
