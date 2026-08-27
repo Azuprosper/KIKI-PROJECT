@@ -1,56 +1,19 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Body
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict, Any
 import json
 import os
 from dotenv import load_dotenv, find_dotenv
-import random
 from datetime import datetime
 from groq import Groq
 
 load_dotenv(find_dotenv())
-# Single APIRouter definition
+
+# APIRouter definition
 router = APIRouter(prefix="/organization", tags=["Organization & Seller Admin"])
 
 # Initialize Groq Client securely from environment variables
 groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-
-# Preset seller profiles for demo scenarios
-MOCK_SELLER_METRICS = {
-    "seller_123": {
-        "seller_id": "seller_123",
-        "period": "Last 7 Days",
-        "total_revenue_usd": 4820.50,
-        "total_units_sold": 134,
-        "total_orders": 98,
-        "top_selling_product": "Wireless Ergonomic Mouse",
-        "top_product_units": 42,
-        "low_stock_alerts": ["Mechanical Keyboard (2 left)", "USB-C Dock (5 left)"],
-        "customer_return_rate": "1.2%"
-    },
-    "seller_456": {
-        "seller_id": "seller_456",
-        "period": "Last 7 Days",
-        "total_revenue_usd": 12450.00,
-        "total_units_sold": 310,
-        "total_orders": 280,
-        "top_selling_product": "4K USB-C Monitor",
-        "top_product_units": 85,
-        "low_stock_alerts": ["4K USB-C Monitor (0 left - OUT OF STOCK)", "Ergonomic Chair (1 left)"],
-        "customer_return_rate": "0.8%"
-    },
-    "seller_789": {
-        "seller_id": "seller_789",
-        "period": "Last 7 Days",
-        "total_revenue_usd": 850.00,
-        "total_units_sold": 18,
-        "total_orders": 15,
-        "top_selling_product": "Noise-Canceling Earbuds",
-        "top_product_units": 8,
-        "low_stock_alerts": [],
-        "customer_return_rate": "4.5%"
-    }
-}
 
 # Pydantic Schemas
 class ProductCreate(BaseModel):
@@ -63,6 +26,11 @@ class ProductCreate(BaseModel):
 class ProductResponse(ProductCreate):
     id: str
     created_at: str
+
+class AnalyticsPayload(BaseModel):
+    organization_id: Optional[str] = None
+    seller_id: Optional[str] = None
+    metrics: Dict[str, Any]
 
 # ----------------------------------------------------
 # 1. Product Upload Route
@@ -79,6 +47,11 @@ async def upload_product(
     try:
         product_id = f"prod_{datetime.now().strftime('%Y%m%d%H%M%S')}"
         
+        # Read image contents if provided (e.g., for cloud storage upload or ML preprocessing)
+        if image:
+            image_bytes = await image.read()
+            await image.close()
+
         product_data = {
             "id": product_id,
             "name": name,
@@ -94,28 +67,29 @@ async def upload_product(
         raise HTTPException(status_code=500, detail=f"Failed to create product: {str(e)}")
 
 # ----------------------------------------------------
-# 2. Weekly Sales Summary & AI Report Generation Route
+# 2. Dynamic Sales Summary & AI Report Generation Route
 # ----------------------------------------------------
-@router.get("/reports/weekly/{seller_id}")
-async def get_weekly_summary_report(seller_id: str):
-    # Check if requested seller_id exists, otherwise pick a random profile from the 3
-    if seller_id in MOCK_SELLER_METRICS:
-        mock_metrics = MOCK_SELLER_METRICS[seller_id]
-    else:
-        selected_key = random.choice(list(MOCK_SELLER_METRICS.keys()))
-        mock_metrics = MOCK_SELLER_METRICS[selected_key].copy()
-        mock_metrics["seller_id"] = seller_id  # Preserve requested seller_id for frontend consistency
+@router.post("/reports/weekly")
+async def generate_weekly_summary_report(payload: AnalyticsPayload):
+    """
+    Receives dynamic JSON aggregated from PostgreSQL via the Java backend 
+    and generates an AI summary report using Groq.
+    """
+    metrics_dict = payload.metrics
     
+    if not metrics_dict:
+        raise HTTPException(status_code=400, detail="Empty sales metrics dictionary received.")
+
     prompt = f"""
-    You are an expert e-commerce business analyst. Write a concise, professional weekly performance report for a seller based on these 7-day metrics:
+    You are an expert e-commerce business analyst. Write a concise, professional weekly performance report for a seller based on these PostgreSQL sales metrics:
     
-    {json.dumps(mock_metrics, indent=2)}
+    {json.dumps(metrics_dict, indent=2)}
     
     Format the response in clean Markdown with these sections:
-    - 📊 **Executive Overview**
-    - 🚀 **Top Performers & Wins**
-    - ⚠️ **Actionable Inventory Alerts**
-    - 💡 **Strategic Recommendations for Next Week**
+    - 📊 Executive Overview
+    - 🚀 Top Performers & Wins
+    - ⚠️ Actionable Inventory Alerts
+    - 💡 Strategic Recommendations for Next Week
     """
     
     try:
@@ -128,7 +102,9 @@ async def get_weekly_summary_report(seller_id: str):
         ai_narrative = completion.choices[0].message.content
         
         return {
-            "metrics": mock_metrics,
+            "organization_id": payload.organization_id,
+            "seller_id": payload.seller_id,
+            "metrics": metrics_dict,
             "ai_report": ai_narrative
         }
     except Exception as e:

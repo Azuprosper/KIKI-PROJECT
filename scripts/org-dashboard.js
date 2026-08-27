@@ -1,27 +1,32 @@
 import { ORG_PRODUCTS_API_URL, PRODUCT_BASE_URL, loadMyProducts, allProducts, renderProducts, updateAllProducts } from "./org-products.js";
 import { API_URL as CHAT_API_URL, toggleChat, appendMessage, handleSend, handleImageUpload } from "./chatbot.js";
-// import { loadMyProducts } from "./products.js";
 
+/* ── BASE URL DEFINITIONS ── */
 const PRODUCT_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
-const UPLOAD_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/uploads/image';
+// we changed upload_api_url
+const UPLOAD_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products/image';
 const ORG_PROFILE_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/organizations/me';
+
+// Java backend summary endpoint
+const ORG_SUMMARY_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/organizations/me/summary';
+
+// FastAPI AI engine endpoint
+const FASTAPI_REPORT_URL = 'https://cut-unjustly-ellipse.ngrok-free.dev/organization/reports/weekly';
 
 loadMyProducts();
 
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // --- 1. ACCOUNT DROPDOWN LOGIC ---
     const accountBtn = document.getElementById('account-btn');
     const accountDropdown = document.getElementById('account-dropdown');
 
     if (accountBtn && accountDropdown) {
-        // Toggle dropdown on button click
         accountBtn.addEventListener('click', (event) => {
-            event.stopPropagation(); // Stop click from bubbling up to the window
+            event.stopPropagation();
             accountDropdown.style.display = (accountDropdown.style.display === 'block') ? 'none' : 'block';
         });
 
-        // Close dropdown when clicking outside of it
         window.addEventListener('click', (event) => {
             if (accountDropdown.style.display === 'block' && !accountBtn.contains(event.target) && !accountDropdown.contains(event.target)) {
                 accountDropdown.style.display = 'none';
@@ -29,36 +34,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
- 
+    // --- 2. MODAL LOGIC ---
     const modal = document.getElementById('product-modal');
     const openBtn = document.getElementById('open-add-product-modal');
     const closeBtn = document.getElementById('close-modal');
 
     if (modal && openBtn && closeBtn) {
-        // Open modal
         openBtn.addEventListener('click', () => {
             const form = document.getElementById('add-product-form');
             if (form) form.reset();
 
             document.getElementById('product-modal').classList.remove('is-update-layout');
-            
-            document.getElementById('edit-product-id').value = ''; // Clear hidden ID
+            document.getElementById('edit-product-id').value = ''; 
             document.getElementById('image-preview-container').style.display = 'none';
             document.getElementById('image-preview').src = '';
-            
-            // Reset text to "Add" mode
+
             document.querySelector('#product-modal h2').textContent = 'Add New Product';
             document.querySelector('.modal-submit-btn').textContent = 'Save Product';
 
             modal.style.display = 'flex';
         });
 
-        
         closeBtn.addEventListener('click', () => {
             modal.style.display = 'none';
         });
 
-        
         window.addEventListener('click', (event) => {
             if (event.target === modal) {
                 modal.style.display = 'none';
@@ -66,55 +66,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
+    // --- 3. LOGOUT LOGIC ---
     const logoutBtn = document.getElementById('logout-btn');
-
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            
             localStorage.removeItem('token');
             localStorage.removeItem('authToken'); 
             localStorage.removeItem('userRole');
-
-            
             window.location.href = 'login.html';
         });
     }
 
-  
+    // --- 4. IMAGE PREVIEW LOGIC ---
     const imageInput = document.getElementById('product-image');
     const imagePreviewContainer = document.getElementById('image-preview-container');
     const imagePreview = document.getElementById('image-preview');
 
     if (imageInput) {
         imageInput.addEventListener('change', function(event) {
-           
             const file = event.target.files[0]; 
 
             if (file) {
-             
                 const reader = new FileReader();
-                
                 reader.onload = function(e) {
-                  
                     imagePreview.src = e.target.result;
                     imagePreviewContainer.style.display = 'block';
-                }
-                
-                // Read the file as a data URL
+                };
                 reader.readAsDataURL(file);
             } else {
-                // If they cancel the selection, hide the preview again
                 imagePreviewContainer.style.display = 'none';
                 imagePreview.src = '';
             }
         });
     }
 
-    // --- 5. SUBMIT NEW PRODUCT LOGIC (UPLOAD IMAGE FIRST, THEN CREATE PRODUCT) ---
+    // --- 5. SUBMIT NEW PRODUCT LOGIC ---
     const addProductForm = document.getElementById('add-product-form');
 
-   
     async function uploadProductImage(file, token) {
         const formData = new FormData();
         formData.append('file', file); 
@@ -124,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: {
                 'ngrok-skip-browser-warning': 'true',
                 'Authorization': `Bearer ${token}`
-                // No Content-Type here - browser sets multipart boundary automatically
             },
             body: formData
         });
@@ -143,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
         addProductForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Target ALL the inputs
             const nameInput = document.querySelector('input[placeholder="Product Name"]');
             const descInput = document.querySelector('textarea[placeholder="Product Description"]');
             const priceInput = document.querySelector('input[placeholder="Price ($)"]');
@@ -157,17 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Saving...';
 
-                const token = localStorage.getItem('token');
-                
-                // 1. Check if we are updating or creating
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
                 const editProductId = document.getElementById('edit-product-id').value;
                 const isUpdating = editProductId !== "";
-                
-                // Determine the correct URL and Method based on whether we are updating or adding
+
                 const endpointUrl = isUpdating ? `${PRODUCT_API_URL}/${editProductId}` : PRODUCT_API_URL;
                 const requestMethod = isUpdating ? 'PUT' : 'POST';
 
-                // 2. Upload the new image (ONLY if i actually picked a new file)
                 let imageUrl = null;
                 if (imageFile) {
                     submitBtn.textContent = 'Uploading image...';
@@ -176,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 submitBtn.textContent = isUpdating ? 'Updating...' : 'Saving...';
 
-                // 3. Build the payload
                 const payload = {
                     name: nameInput.value.trim(),
                     description: descInput.value.trim(),
@@ -184,17 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     stockQuantity: stockInput.value.trim()
                 };
 
-                // Only attach the image field to the JSON if a new one was uploaded
                 if (imageUrl) {
                     payload.imageUrl = imageUrl;
-                }else if (isUpdating) {
+                } else if (isUpdating) {
                     const existingProduct = allProducts.find(p => String(p.id) === String(editProductId));
                     if (existingProduct && existingProduct.imageUrl) {
                         payload.imageUrl = existingProduct.imageUrl;
                     }
                 }
 
-                // 4. Send to the backend
                 const response = await fetch(endpointUrl, {
                     method: requestMethod,
                     headers: {
@@ -211,19 +190,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) {
                     throw new Error(data.message);
                 }
-                
-                // Clean up and close
+
                 addProductForm.reset();
                 document.getElementById('edit-product-id').value = '';
-                document.getElementById('product-image').required = true; // reset required rule
+                document.getElementById('product-image').required = true;
                 document.getElementById('image-preview-container').style.display = 'none';
                 document.getElementById('product-modal').style.display = 'none';
-                
-                // Refresh the grid!
+
                 if (typeof loadMyProducts === "function") {
                     loadMyProducts();
                 }
-                
+
             } catch (error) {
                 console.error('Error processing product:', error);
                 alert(error.message);
@@ -234,9 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // FETCH AND DISPLAY ORG NAME IN HEADER 
+    // --- 6. ORG PROFILE & SEARCH LOGIC ---
     async function loadOrganizationProfile() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
         if (!token) return;
 
         try {
@@ -251,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const orgData = await response.json();
                 const taglineElement = document.getElementById('header-tagline');
-                
+
                 if (taglineElement) {
                     const storeName = orgData.name || orgData.orgName;
                     taglineElement.textContent = storeName.toUpperCase();
@@ -262,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    
     loadOrganizationProfile();
 
     const searchInput = document.getElementById('search-bar'); 
@@ -276,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- DELETE MODAL LOGIC ---
+    // --- 7. DELETE & UPDATE MODAL HANDLERS ---
     let productToDeleteId = null; 
     const deleteModal = document.getElementById('delete-confirm-modal');
     const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
@@ -296,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 confirmDeleteBtn.textContent = 'Deleting...';
                 confirmDeleteBtn.disabled = true;
-                const token = localStorage.getItem('token');
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
 
                 const response = await fetch(`${PRODUCT_BASE_URL}/${productToDeleteId}`, {
                     method: 'DELETE',
@@ -308,13 +284,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (!response.ok) throw new Error('Failed to delete the product.');
 
-                // Filter out the deleted product and update the array in org-products.js
                 const newProducts = allProducts.filter(product => String(product.id) !== String(productToDeleteId));
                 updateAllProducts(newProducts);
-                
-                // Redraw the grid
                 renderProducts(newProducts);
-                
+
                 if (deleteModal) deleteModal.style.display = 'none';
 
             } catch (error) {
@@ -328,17 +301,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- MAIN GRID CLICK LISTENER (EDIT & DELETE TRIGGER) ---
     document.addEventListener('click', async (e) => {
-        
         if (e.target.classList.contains('delete-product-btn')) {
             productToDeleteId = e.target.getAttribute('data-id');
             if (deleteModal) deleteModal.style.display = 'flex';
         } 
-        
         else if (e.target.classList.contains('update-product-btn')) {
             const productId = e.target.getAttribute('data-id');
-            
             const product = allProducts.find(p => String(p.id) === String(productId));
             if (!product) return;
 
@@ -358,9 +327,85 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('product-image').required = false;
 
             document.getElementById('product-modal').classList.add('is-update-layout');
-            
             document.getElementById('product-modal').style.display = 'flex';
         }
     });
-    
+
+    // --- 8. AI WEEKLY REPORT GENERATOR LOGIC ---
+    const generateReportBtn = document.getElementById('generate-report-btn');
+    const reportDisplayArea = document.getElementById('report-output-container');
+
+    if (generateReportBtn) {
+        generateReportBtn.addEventListener('click', async () => {
+            const originalBtnText = generateReportBtn.textContent;
+            
+            try {
+                generateReportBtn.disabled = true;
+                generateReportBtn.textContent = 'Fetching metrics...';
+
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+
+                // Step A: Fetch aggregated store summary from Java Backend
+                const summaryResponse = await fetch(ORG_SUMMARY_API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!summaryResponse.ok) {
+                    throw new Error(`Failed to retrieve sales summary (HTTP ${summaryResponse.status})`);
+                }
+
+                const javaMetricsJson = await summaryResponse.json();
+
+                generateReportBtn.textContent = 'Generating AI report...';
+
+                // Step B: Wrap the Java JSON to match the FastAPI Pydantic schema
+                const pythonPayload = {
+                    organization_id: "me", // Or grab this from your decoded JWT if needed
+                    seller_id: null,
+                    metrics: javaMetricsJson // Nesting the Java response here!
+                };
+
+                // Step C: Post compiled JSON payload to FastAPI AI endpoint
+                const reportResponse = await fetch(FASTAPI_REPORT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
+                    body: JSON.stringify(pythonPayload)
+                });
+
+                if (!reportResponse.ok) {
+                    throw new Error(`AI Report Service error (HTTP ${reportResponse.status})`);
+                }
+
+                const reportResult = await reportResponse.json();
+                
+                // Step D: Render Markdown Report safely
+                if (reportDisplayArea) {
+                    const content = reportResult.ai_report || "No report generated.";
+                    const htmlOutput = (typeof marked !== 'undefined' && marked.parse) 
+                        ? marked.parse(content) 
+                        : content;
+                    
+                    reportDisplayArea.innerHTML = `<div class="ai-report-content">${htmlOutput}</div>`;
+                    reportDisplayArea.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Weekly Report Generated Successfully!');
+                }
+
+            } catch (error) {
+                console.error('Error generating report:', error);
+                alert(`Report Generation Failed: ${error.message}`);
+            } finally {
+                generateReportBtn.disabled = false;
+                generateReportBtn.textContent = originalBtnText;
+            }
+        });
+    }
+
 });

@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
    CART BOOTSTRAP (Pure Backend Driven)
 ════════════════════════════════════════════ */
 
-
 async function initCart() {
   showLoading();
 
@@ -202,7 +201,7 @@ function applyCoupon(input, msgEl) {
 }
 
 /* ════════════════════════════════════════════
-   CHECKOUT
+   CHECKOUT (UPDATED PAYLOAD)
 ════════════════════════════════════════════ */
 
 function initCheckout() {
@@ -221,15 +220,41 @@ async function handleCheckout() {
   setCheckoutLoading(true);
 
   try {
-    const result = await submitCart({ coupon: state.coupon });
+    const subtotal = getSubtotal();
+    const discount = state.discount || 0;
+
+    // Build the exact payload your Java backend expects
+    const checkoutPayload = {
+      timestamp: new Date().toISOString(),
+      coupon: state.coupon || null,
+      discount: discount,
+      subtotal: subtotal,
+      totalAmount: subtotal - discount,
+      items: state.items.map((item) => ({
+        cartItemId: item.id,
+        productId: item.productId || item.id,
+        productName: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        // Passing the specific organization data for PostgreSQL sorting
+        organization_id: item.organization_id,
+        organization_name: item.organization_name
+      }))
+    };
+
+    const result = await submitCart(checkoutPayload);
+    
     showNotification(
       result?.message || "Order placed successfully! 🎉",
       "success",
       5000
     );
+    
     clearState();
+    localStorage.removeItem("kiki_cart");
     renderAll();
   } catch (err) {
+    console.error("[checkout] Error:", err);
     showNotification(`Checkout failed: ${err.message}`, "error");
   } finally {
     setCheckoutLoading(false);
@@ -249,6 +274,7 @@ function initClearCart() {
 
     const backup = [...state.items];
     clearState();
+    localStorage.removeItem("kiki_cart");
     renderAll();
 
     try {
@@ -280,7 +306,7 @@ function initAccountDropdown() {
 }
 
 /* ════════════════════════════════════════════
-   HELPERS
+   HELPERS (UPDATED NORMALISATION)
 ════════════════════════════════════════════ */
 
 /**
@@ -292,12 +318,15 @@ function normaliseItems(serverData) {
     : (serverData?.items || serverData?.cartItems || []);
 
   return rawList.map((dto) => ({
-    id:        dto.cartItemId || dto.id,       // CRITICAL: Used for PUT and DELETE requests
-    productId: dto.productId,                  // Kept in state for seller aggregation
-    name:      dto.productName || dto.name || "Product",
-    price:     parseFloat(dto.unitPrice ?? dto.price ?? 0),
-    image:     dto.productImageUrl || dto.image || dto.image_url || "../images/placeholder.png",
-    quantity:  parseInt(dto.quantity || 1, 10),
+    id:                dto.cartItemId || dto.id,       
+    productId:         dto.productId,                  
+    name:              dto.productName || dto.name || "Product",
+    price:             parseFloat(dto.unitPrice ?? dto.price ?? 0),
+    image:             dto.productImageUrl || dto.image || dto.image_url || "../images/placeholder.png",
+    quantity:          parseInt(dto.quantity || 1, 10),
+    // Map the organization details here so they persist in state
+    organization_id:   dto.organization_id || dto.organizationId || null,
+    organization_name: dto.organization_name || dto.organizationName || null
   }));
 }
 

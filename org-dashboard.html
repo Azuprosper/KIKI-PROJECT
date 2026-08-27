@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    
     <meta charset="UTF-8">
     <title>ORG DASHBOARD - Kiki</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,9 +14,57 @@
     <link rel="stylesheet" href="styles/org-dashboard.css">
     <link rel="stylesheet" href="styles/index.css"> 
     <link rel="stylesheet" href="styles/chatbot.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- AI Report Generator Styles -->
+    <style>
+      .ai-footer-section {
+        padding: 40px 20px;
+        background-color: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+        margin-top: 40px;
+      }
+      .ai-report-btn {
+        background-color: darkblue;
+        color: white;
+        padding: 14px 28px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 139, 0.2);
+      }
+      .ai-report-btn:hover {
+        background-color: #000080;
+        transform: translateY(-1px);
+      }
+      .ai-report-btn:disabled {
+        background-color: #7a7a9c;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      #report-output-container {
+        max-width: 800px;
+        margin: 0 auto 30px auto;
+        text-align: left;
+      }
+      .ai-report-content {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+        color: #333;
+      }
+    </style>
   </head>
   <body>
-
   
     <header>
         <div class="logo">
@@ -24,7 +73,6 @@
         <div class="tagline" id="header-tagline">THE BEST E-COMMERCE PLATFORM</div>
             
         <div class="header-right-actions">
-            
             <div class="user-actions-container" id="logged-in-header-actions">
                 <button class="user-actions" id="account-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -33,7 +81,6 @@
                     </svg>
                     <span>Account</span>
                 </button>
-
                
                 <div id="account-dropdown" class="dropdown-menu">
                     <ul class="dropdown-links">
@@ -57,8 +104,6 @@
           </button>
         </div>
   </div>
-
-
     
     <main class="dashboard-empty-state">
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#caced6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
@@ -79,22 +124,14 @@
             <div class="modal-subtitle">Enter the details of the product you want to list.</div>
             
            <form id="add-product-form">
-
                <input type="hidden" id="edit-product-id" value="">
                <input type="text" placeholder="Product Name" class="modal-input" required>
-                
                 <textarea placeholder="Product Description" class="modal-input" rows="2" required style="resize: vertical; font-family: inherit;"></textarea>
-                
                 <input type="tel" placeholder="Price ($)" class="modal-input" required>
-                
-               
                 <input type="tel" placeholder="Stock Quantity" class="modal-input" required>
-                
-                
                 <label for="product-image" class="file-upload-label">Upload Product Image</label>
                 <input type="file" id="product-image" accept="image/png, image/jpeg, image/webp" class="modal-file-input" required>
                 
-              
                 <div id="image-preview-container" class="image-preview-container">
                     <img id="image-preview" src="" alt="Product Preview">
                 </div>
@@ -115,10 +152,15 @@
         </div>
     </div>
 
-
+    <!-- AI Report Generation Footer Area -->
+    <footer class="ai-footer-section">
+        <div id="report-output-container"></div>
+        <button id="generate-report-btn" class="ai-report-btn">
+            Generate AI Report ⚡
+        </button>
+    </footer>
 
      <!-- floating chatbox {Azu} -->
-
 <div id="chatbot-container">
   <!-- Chat Button Toggle -->
   <button id="chat-toggle-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="currentColor" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">

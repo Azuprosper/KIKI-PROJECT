@@ -13,6 +13,8 @@ from cv_model import extract_image_description
 from contextlib import asynccontextmanager
 import urllib3
 from groq import Groq  # Make sure to run: pip install groq
+
+# Ensure this matches your router file name (e.g., organization_router.py or admin_router.py)
 from admin_router import router as organization_router
 
 load_dotenv(find_dotenv())
@@ -83,6 +85,8 @@ async def lifespan(app: FastAPI):
     print("FastAPI Application Shutting Down...")
 
 app = FastAPI(lifespan=lifespan)
+
+# Single router inclusion
 app.include_router(organization_router)
 
 app.add_middleware(
@@ -135,9 +139,8 @@ async def chat(request: ChatRequest):
     )
     
     try:
-        # Offload text generation to Cloud Groq API for sub-second speeds on laptop
         response = groq_client.chat.completions.create(
-            model="openai/gpt-oss-120b", # Or qwen-2.5-0.5b-instruct
+            model="openai/gpt-oss-120b",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": request.message}
@@ -172,6 +175,12 @@ async def image_search(file: UploadFile = File(...)):
         "reply": reply_text,
         "products": matched_products
     }
-app.include_router(organization_router)
+
+@app.post("/refresh-catalog")
+async def refresh_catalog():
+    """Manual trigger to re-sync vector embeddings after new product uploads."""
+    fetch_and_embed_products()
+    return {"status": "success", "total_products": len(PRODUCTS)}
+
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
