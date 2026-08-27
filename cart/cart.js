@@ -36,6 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initClearCart();
 });
 
+/* ════════════════════════════════════════════
+   CART BOOTSTRAP (Pure Backend Driven)
+════════════════════════════════════════════ */
+
 async function initCart() {
   showLoading();
 
@@ -116,6 +120,60 @@ async function handleQtyChange(id, newQty) {
   }
 }
 
+/* ════════════════════════════════════════════
+   COUPON
+════════════════════════════════════════════ */
+
+function initCoupon() {
+  const btn   = document.getElementById("btn-apply-coupon");
+  const input = document.getElementById("coupon-input");
+  const msg   = document.getElementById("coupon-msg");
+
+  if (!btn || !input) return;
+
+  if (state.coupon) input.value = state.coupon;
+
+  btn.addEventListener("click", () => applyCoupon(input, msg));
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") applyCoupon(input, msg);
+  });
+}
+
+const COUPONS = {
+  KIKI10: 0.10,   // 10%
+  KIKI20: 0.20,   // 20%
+  SAVE5:  5,      // flat $5
+};
+
+function applyCoupon(input, msgEl) {
+  const code     = input.value.trim().toUpperCase();
+  const subtotal = getSubtotal();
+
+  if (!code) {
+    setMsg(msgEl, "Please enter a coupon code.", "error");
+    return;
+  }
+
+  if (!COUPONS[code]) {
+    setMsg(msgEl, "Invalid coupon code.", "error");
+    return;
+  }
+
+  const discount =
+    code === "SAVE5"
+      ? Math.min(5, subtotal)
+      : parseFloat((subtotal * COUPONS[code]).toFixed(2));
+
+  setState({ coupon: code, discount });
+  renderSummary();
+  setMsg(msgEl, `Coupon "${code}" applied! You save $${discount.toFixed(2)}.`, "success");
+  showNotification(`Coupon "${code}" applied!`, "success");
+}
+
+/* ════════════════════════════════════════════
+   CHECKOUT (UPDATED PAYLOAD)
+════════════════════════════════════════════ */
+
 function initCheckout() {
   const btn = document.getElementById("btn-checkout");
   if (!btn) return;
@@ -132,15 +190,41 @@ async function handleCheckout() {
   setCheckoutLoading(true);
 
   try {
-    const result = await submitCart();
+    const subtotal = getSubtotal();
+    const discount = state.discount || 0;
+
+    // Build the exact payload your Java backend expects
+    const checkoutPayload = {
+      timestamp: new Date().toISOString(),
+      coupon: state.coupon || null,
+      discount: discount,
+      subtotal: subtotal,
+      totalAmount: subtotal - discount,
+      items: state.items.map((item) => ({
+        cartItemId: item.id,
+        productId: item.productId || item.id,
+        productName: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        // Passing the specific organization data for PostgreSQL sorting
+        organization_id: item.organization_id,
+        organization_name: item.organization_name
+      }))
+    };
+
+    const result = await submitCart(checkoutPayload);
+    
     showNotification(
       result?.message || "Order placed successfully!",
       "success",
       5000
     );
+    
     clearState();
+    localStorage.removeItem("kiki_cart");
     renderAll();
   } catch (err) {
+    console.error("[checkout] Error:", err);
     showNotification(`Checkout failed: ${err.message}`, "error");
   } finally {
     setCheckoutLoading(false);
@@ -168,6 +252,7 @@ function initClearCart() {
 
     const backup = [...state.items];
     clearState();
+    localStorage.removeItem("kiki_cart");
     renderAll();
 
     try {
@@ -194,18 +279,32 @@ function initAccountDropdown() {
   });
 }
 
+/* ════════════════════════════════════════════
+   HELPERS (UPDATED NORMALISATION)
+════════════════════════════════════════════ */
+
+/**
+ * Normalise exact Java CartItemResponseDto into frontend state
+ */
 function normaliseItems(serverData) {
   const rawList = Array.isArray(serverData) 
     ? serverData 
     : (serverData?.items || serverData?.cartItems || []);
 
   return rawList.map((dto) => ({
-    id: dto.cartItemId || dto.id,
-    productId: dto.productId,
-    name: dto.productName || "Product",
-    store: dto.organizationName || "Kiki Stores",
-    price: parseFloat(dto.unitPrice ?? dto.price ?? 0),
-    image: dto.productImageUrl || dto.image || dto.image_url || "../images/placeholder.png",
-    quantity: parseInt(dto.quantity || 1, 10),
+    id:                dto.cartItemId || dto.id,       
+    productId:         dto.productId,                  
+    name:              dto.productName || dto.name || "Product",
+    price:             parseFloat(dto.unitPrice ?? dto.price ?? 0),
+    image:             dto.productImageUrl || dto.image || dto.image_url || "../images/placeholder.png",
+    quantity:          parseInt(dto.quantity || 1, 10),
+    // Map the organization details here so they persist in state
+    organization_id:   dto.organization_id || dto.organizationId || null,
+    organization_name: dto.organization_name || dto.organizationName || null
   }));
+}
+function setMsg(el, text, type) {
+  if (!el) return;
+  el.textContent = text;
+  el.className   = `coupon-msg ${type}`;
 }

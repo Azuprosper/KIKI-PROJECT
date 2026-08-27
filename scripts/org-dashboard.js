@@ -1,21 +1,29 @@
 import { ORG_PRODUCTS_API_URL, PRODUCT_BASE_URL, loadMyProducts, allProducts, renderProducts, updateAllProducts } from "./org-products.js";
 import { API_URL as CHAT_API_URL, toggleChat, appendMessage, handleSend, handleImageUpload } from "./chatbot.js";
 
+/* ── BASE URL DEFINITIONS ── */
 const PRODUCT_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products';
+// we changed upload_api_url
 const UPLOAD_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/products/image';
 const ORG_PROFILE_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/organizations/me';
+
+// Java backend summary endpoint
+const ORG_SUMMARY_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/organizations/me/summary';
+
+// FastAPI AI engine endpoint
+const FASTAPI_REPORT_URL = 'https://cut-unjustly-ellipse.ngrok-free.dev/organization/reports/weekly';
 
 loadMyProducts();
 
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // --- 1. ACCOUNT DROPDOWN LOGIC ---
     const accountBtn = document.getElementById('account-btn');
     const accountDropdown = document.getElementById('account-dropdown');
 
     if (accountBtn && accountDropdown) {
         accountBtn.addEventListener('click', (event) => {
-            event.stopPropagation(); 
+            event.stopPropagation();
             accountDropdown.style.display = (accountDropdown.style.display === 'block') ? 'none' : 'block';
         });
 
@@ -26,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- 2. MODAL LOGIC ---
     const modal = document.getElementById('product-modal');
     const openBtn = document.getElementById('open-add-product-modal');
     const closeBtn = document.getElementById('close-modal');
@@ -39,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('edit-product-id').value = ''; 
             document.getElementById('image-preview-container').style.display = 'none';
             document.getElementById('image-preview').src = '';
-            
             document.querySelector('#product-modal h2').textContent = 'Add New Product';
             document.querySelector('.modal-submit-btn').textContent = 'Save Product';
 
@@ -57,8 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- 3. LOGOUT LOGIC ---
     const logoutBtn = document.getElementById('logout-btn');
-
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             localStorage.removeItem('token');
@@ -68,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- 4. IMAGE PREVIEW LOGIC ---
     const imageInput = document.getElementById('product-image');
     const imagePreviewContainer = document.getElementById('image-preview-container');
     const imagePreview = document.getElementById('image-preview');
@@ -78,12 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (file) {
                 const reader = new FileReader();
-                
                 reader.onload = function(e) {
                     imagePreview.src = e.target.result;
                     imagePreviewContainer.style.display = 'block';
-                }
-                
+                };
                 reader.readAsDataURL(file);
             } else {
                 imagePreviewContainer.style.display = 'none';
@@ -136,10 +143,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.textContent = 'Saving...';
 
                 const token = localStorage.getItem('token') || localStorage.getItem('authToken');
-                
                 const editProductId = document.getElementById('edit-product-id').value;
                 const isUpdating = editProductId !== "";
-                
+
                 const endpointUrl = isUpdating ? `${PRODUCT_API_URL}/${editProductId}` : PRODUCT_API_URL;
                 const requestMethod = isUpdating ? 'PUT' : 'POST';
 
@@ -183,17 +189,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) {
                     throw new Error(data.message);
                 }
-                
+
                 addProductForm.reset();
                 document.getElementById('edit-product-id').value = '';
-                document.getElementById('product-image').required = true; 
+                document.getElementById('product-image').required = true;
                 document.getElementById('image-preview-container').style.display = 'none';
                 document.getElementById('product-modal').style.display = 'none';
-                
+
                 if (typeof loadMyProducts === "function") {
                     loadMyProducts();
                 }
-                
+
             } catch (error) {
                 console.error('Error processing product:', error);
                 alert(error.message);
@@ -204,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // FETCH AND DISPLAY ORG NAME IN HEADER 
+    // --- 6. ORG PROFILE & SEARCH LOGIC ---
     async function loadOrganizationProfile() {
         const token = localStorage.getItem('token') || localStorage.getItem('authToken');
         if (!token) return;
@@ -221,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const orgData = await response.json();
                 const taglineElement = document.getElementById('header-tagline');
-                
+
                 if (taglineElement) {
                     const storeName = orgData.name || orgData.orgName;
                     taglineElement.textContent = storeName.toUpperCase();
@@ -245,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- DELETE MODAL LOGIC ---
+    // --- 7. DELETE & UPDATE MODAL HANDLERS ---
     let productToDeleteId = null; 
     const deleteModal = document.getElementById('delete-confirm-modal');
     const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
@@ -265,7 +271,6 @@ if (confirmDeleteBtn) {
             try {
                 confirmDeleteBtn.textContent = 'Deleting...';
                 confirmDeleteBtn.disabled = true;
-                
                 const token = localStorage.getItem('token') || localStorage.getItem('authToken');
 
                 const response = await fetch(`${PRODUCT_API_URL}/${productToDeleteId}`, {
@@ -289,11 +294,10 @@ if (confirmDeleteBtn) {
                     throw new Error(backendMessage);
                 }
 
-                // If SUCCESSFUL: filter, update, render, and close
                 const newProducts = allProducts.filter(product => String(product.id) !== String(productToDeleteId));
                 updateAllProducts(newProducts);
                 renderProducts(newProducts);
-                
+
                 if (deleteModal) deleteModal.style.display = 'none';
                 
                 // ONLY clear the ID if the deletion actually worked { AZU }
@@ -310,17 +314,13 @@ if (confirmDeleteBtn) {
         });
     }
 
-    // --- MAIN GRID CLICK LISTENER (EDIT & DELETE TRIGGER) ---
     document.addEventListener('click', async (e) => {
-        
         if (e.target.classList.contains('delete-product-btn')) {
             productToDeleteId = e.target.getAttribute('data-id');
             if (deleteModal) deleteModal.style.display = 'flex';
         } 
-        
         else if (e.target.classList.contains('update-product-btn')) {
             const productId = e.target.getAttribute('data-id');
-            
             const product = allProducts.find(p => String(p.id) === String(productId));
             if (!product) return;
 
@@ -340,9 +340,85 @@ if (confirmDeleteBtn) {
             document.getElementById('product-image').required = false;
 
             document.getElementById('product-modal').classList.add('is-update-layout');
-            
             document.getElementById('product-modal').style.display = 'flex';
         }
     });
-    
+
+    // --- 8. AI WEEKLY REPORT GENERATOR LOGIC ---
+    const generateReportBtn = document.getElementById('generate-report-btn');
+    const reportDisplayArea = document.getElementById('report-output-container');
+
+    if (generateReportBtn) {
+        generateReportBtn.addEventListener('click', async () => {
+            const originalBtnText = generateReportBtn.textContent;
+            
+            try {
+                generateReportBtn.disabled = true;
+                generateReportBtn.textContent = 'Fetching metrics...';
+
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+
+                // Step A: Fetch aggregated store summary from Java Backend
+                const summaryResponse = await fetch(ORG_SUMMARY_API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'ngrok-skip-browser-warning': 'true',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!summaryResponse.ok) {
+                    throw new Error(`Failed to retrieve sales summary (HTTP ${summaryResponse.status})`);
+                }
+
+                const javaMetricsJson = await summaryResponse.json();
+
+                generateReportBtn.textContent = 'Generating AI report...';
+
+                // Step B: Wrap the Java JSON to match the FastAPI Pydantic schema
+                const pythonPayload = {
+                    organization_id: "me", // Or grab this from your decoded JWT if needed
+                    seller_id: null,
+                    metrics: javaMetricsJson // Nesting the Java response here!
+                };
+
+                // Step C: Post compiled JSON payload to FastAPI AI endpoint
+                const reportResponse = await fetch(FASTAPI_REPORT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
+                    body: JSON.stringify(pythonPayload)
+                });
+
+                if (!reportResponse.ok) {
+                    throw new Error(`AI Report Service error (HTTP ${reportResponse.status})`);
+                }
+
+                const reportResult = await reportResponse.json();
+                
+                // Step D: Render Markdown Report safely
+                if (reportDisplayArea) {
+                    const content = reportResult.ai_report || "No report generated.";
+                    const htmlOutput = (typeof marked !== 'undefined' && marked.parse) 
+                        ? marked.parse(content) 
+                        : content;
+                    
+                    reportDisplayArea.innerHTML = `<div class="ai-report-content">${htmlOutput}</div>`;
+                    reportDisplayArea.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Weekly Report Generated Successfully!');
+                }
+
+            } catch (error) {
+                console.error('Error generating report:', error);
+                alert(`Report Generation Failed: ${error.message}`);
+            } finally {
+                generateReportBtn.disabled = false;
+                generateReportBtn.textContent = originalBtnText;
+            }
+        });
+    }
+
 });
