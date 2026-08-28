@@ -10,10 +10,10 @@ export function setState(patch) {
   Object.assign(state, patch);
 }
 
-export function setItems(items) {
-  state.items = Array.isArray(items) ? items : [];
-  saveToLocalStorage();
-}
+// export function setItems(items) {
+//   state.items = Array.isArray(items) ? items : [];
+//   saveToLocalStorage();
+// }
 
 export function setItemQty(id, quantity) {
   const item = state.items.find((i) => String(i.id) === String(id));
