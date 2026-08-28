@@ -204,3 +204,11 @@ body {
   color: rgb(26, 84, 191); 
   border: 2px solid rgb(26, 84, 191);
  }
+ .copyright{
+  color: rgb(99, 99, 99);
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 7px;
+}
