@@ -263,9 +263,8 @@ function normaliseItems(serverData) {
     price:             parseFloat(dto.unitPrice ?? dto.price ?? 0),
     image:             dto.productImageUrl || dto.image || dto.image_url || "../images/placeholder.png",
     quantity:          parseInt(dto.quantity || 1, 10),
-    // Map the organization details here so they persist in state
     organization_id:   dto.organization_id || dto.organizationId || null,
-    organization_name: dto.organization_name || dto.organizationName || null
+    store: dto.organizationName,
   }));
 }
 function setMsg(el, text, type) {
