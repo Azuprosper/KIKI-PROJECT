@@ -86,10 +86,10 @@ async def generate_weekly_summary_report(payload: AnalyticsPayload):
     {json.dumps(metrics_dict, indent=2)}
     
     Format the response in clean Markdown with these sections:
-    - 📊 Executive Overview
-    - 🚀 Top Performers & Wins
-    - ⚠️ Actionable Inventory Alerts
-    - 💡 Strategic Recommendations for Next Week
+    -  Executive Overview
+    -  Top Performers & Wins
+    -  Actionable Inventory Alerts
+    -  Strategic Recommendations for Next Week
     """
     
     try:
