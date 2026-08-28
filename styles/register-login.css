@@ -34,6 +34,7 @@
 }
 .signin-buttons:hover{
   opacity: 0.7;
+  transform: translateY(-1px);
 }
 
 .login-margin{
@@ -112,7 +113,7 @@ body {
   cursor:pointer;
 }
 .delete-acc-btn:hover{
-  /* opacity: 0.9; */
+  transform: translateY(-1px);
   background-color: rgb(133, 77, 77);
 }
 .delete-acc-overlay {
@@ -178,7 +179,7 @@ body {
   color: white;
 }
 .delete-acc-btn-confirm:hover{
-  /* opacity: 0.9; */
+  transform: translateY(-1px);
   background-color: rgb(133, 77, 77);
 }
 @media (max-width: 768px) {

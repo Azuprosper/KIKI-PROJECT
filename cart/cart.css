@@ -101,16 +101,20 @@ body {
   text-align: left;
 }
 
-.cart-table tbody tr { border-bottom: 1px solid #f0f0f0; }
+.cart-table tbody tr { border-bottom: 1px solid white; }
 
 .btn-remove {
   background: none;
   border: none;
   cursor: pointer;
-  color: #dc3545;
+  color: rgb(206, 118, 118);
   font-size: 20px;
 }
-.btn-remove:hover { color: #a71d2a; transform: scale(1.2); }
+.btn-remove:hover { 
+  color: rgb(150, 0, 0); 
+  transform: scale(1.2); 
+
+}
 
 .cart-item-img {
   width: 72px;
@@ -185,18 +189,44 @@ body {
   font-family: inherit;
 }
 
-.btn-outline { background: transparent; color: rgb(26, 84, 191); border: 2px solid rgb(26, 84, 191); text-decoration: none; }
-.btn-outline:hover { background: rgb(26, 84, 191); color: #fff; }
+.btn-outline { 
+  background: transparent; 
+  color: rgb(26, 84, 191); 
+  border: 2px solid rgb(26, 84, 191); 
+  text-decoration: none; 
+}
+.btn-outline:hover { 
+  background: rgb(26, 84, 191); 
+  color: white; 
+  transform: translateY(-1px);
+}
 
-.btn-danger { background: #dc3545; color: #fff; border: none; }
-.btn-danger:hover { opacity: 0.85; }
+.btn-danger { 
+  background: #dc3545; 
+  color: #fff; 
+  border: none; 
+}
+.btn-danger:hover { 
+  opacity: 0.85; 
+  transform: translateY(-1px);
+}
 
-.btn-checkout { width: 100%; background: rgb(26, 84, 191); color: #fff; border: none; padding: 14px; margin-top: 10px; }
-.btn-checkout:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-checkout { 
+  width: 100%; 
+  background: rgb(26, 84, 191); 
+  color: #fff; 
+  border: none; 
+  padding: 14px; 
+  margin-top: 10px; 
+}
+.btn-checkout:hover {
+ opacity: 0.88; 
+ transform: translateY(-1px); 
+}
 
 .kiki-footer {
   background-color: #1a1a2e;
-  color: #ccc;
+  color: rgb(190, 190, 190);
   padding: 36px 20px 0;
   margin-top: auto;
 }
