@@ -298,6 +298,14 @@ body {
   justify-content: center; 
   gap: 12px; 
 }
+.copyright{
+  color: rgb(99, 99, 99);
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 7px;
+}
 
 @media (max-width: 768px) {
   .cart-actions { flex-direction: column; gap: 10px; align-items: stretch; }

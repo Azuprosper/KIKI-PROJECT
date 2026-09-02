@@ -182,6 +182,14 @@ body {
   transform: translateY(-1px);
   background-color: rgb(133, 77, 77);
 }
+.copyright{
+  color: rgb(99, 99, 99);
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 7px;
+}
 @media (max-width: 768px) {
   .account-container {
     flex-direction: column; 

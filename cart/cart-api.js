@@ -6,7 +6,7 @@ function getAuthHeaders() {
   return token ? { "Authorization": `Bearer ${token}` } : {};
 }
 
-// --- MASTER FETCH WRAPPER ---
+
 async function request(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
 
@@ -30,7 +30,7 @@ async function request(endpoint, options = {}) {
     throw new Error(message);
   }
 
-  // 204 No Content means success, but no data to parse
+
   if (response.status === 204) return null;
   return response.json();
 }

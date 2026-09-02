@@ -1,33 +1,9 @@
-import {
-  state,
-  setState,
-  setItems,
-  setItemQty,
-  removeItemFromState,
-  clearState,
-  getTotalCount,
-  getSubtotal,
-  loadFromLocalStorage
-} from "./cart-state.js";
+import { state, setState, setItems, setItemQty, removeItemFromState, clearState, getTotalCount, getSubtotal, loadFromLocalStorage} from"./cart-state.js";
 
-import {
-  fetchCartFromServer,
-  updateQty,
-  removeFromCart,
-  submitCart,
-} from "./cart-api.js";
+import { fetchCartFromServer, updateQty, removeFromCart, submitCart,} from "./cart-api.js";
 
-import {
-  showLoading,
-  showEmpty,
-  showContent,
-  renderCartRows,
-  renderSummary,
-  renderHeaderCount,
-  updateRowSubtotal,
-  showNotification,
-  setCheckoutLoading,
-} from "./cart-render.js";
+import { showLoading, showEmpty, showContent, renderCartRows, renderSummary, renderHeaderCount, updateRowSubtotal, showNotification,
+setCheckoutLoading,} from "./cart-render.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initAccountDropdown();
@@ -36,9 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initClearCart();
 });
 
-/* ════════════════════════════════════════════
-   CART BOOTSTRAP (Pure Backend Driven)
-════════════════════════════════════════════ */
+
 
 async function initCart() {
   showLoading();
@@ -120,59 +94,56 @@ async function handleQtyChange(id, newQty) {
   }
 }
 
-/* ════════════════════════════════════════════
-   COUPON
-════════════════════════════════════════════ */
+/* COUPON */
 
-function initCoupon() {
-  const btn   = document.getElementById("btn-apply-coupon");
-  const input = document.getElementById("coupon-input");
-  const msg   = document.getElementById("coupon-msg");
+// function initCoupon() {
+//   const btn   = document.getElementById("btn-apply-coupon");
+//   const input = document.getElementById("coupon-input");
+//   const msg   = document.getElementById("coupon-msg");
 
-  if (!btn || !input) return;
+//   if (!btn || !input) return;
 
-  if (state.coupon) input.value = state.coupon;
+//   if (state.coupon) input.value = state.coupon;
 
-  btn.addEventListener("click", () => applyCoupon(input, msg));
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") applyCoupon(input, msg);
-  });
-}
+//   btn.addEventListener("click", () => applyCoupon(input, msg));
+//   input.addEventListener("keydown", (e) => {
+//     if (e.key === "Enter") applyCoupon(input, msg);
+//   });
+// }
 
-const COUPONS = {
-  KIKI10: 0.10,   // 10%
-  KIKI20: 0.20,   // 20%
-  SAVE5:  5,      // flat $5
-};
+//  const COUPONS = {
+//    KIKI10: 0.10,   // 10%
+//    KIKI20: 0.20,   // 20%
+//    SAVE5:  5,      // flat $5
+//  };
 
-function applyCoupon(input, msgEl) {
-  const code     = input.value.trim().toUpperCase();
-  const subtotal = getSubtotal();
+// function applyCoupon(input, msgEl) {
+//   const code     = input.value.trim().toUpperCase();
+//   const subtotal = getSubtotal();
 
-  if (!code) {
-    setMsg(msgEl, "Please enter a coupon code.", "error");
-    return;
-  }
+//   if (!code) {
+//     setMsg(msgEl, "Please enter a coupon code.", "error");
+//     return;
+//   }
 
-  if (!COUPONS[code]) {
-    setMsg(msgEl, "Invalid coupon code.", "error");
-    return;
-  }
+//   if (!COUPONS[code]) {
+//     setMsg(msgEl, "Invalid coupon code.", "error");
+//     return;
+//   }
 
-  const discount =
-    code === "SAVE5"
-      ? Math.min(5, subtotal)
-      : parseFloat((subtotal * COUPONS[code]).toFixed(2));
+//   const discount =
+//     code === "SAVE5"
+//       ? Math.min(5, subtotal)
+//       : parseFloat((subtotal * COUPONS[code]).toFixed(2));
 
-  setState({ coupon: code, discount });
-  renderSummary();
-  setMsg(msgEl, `Coupon "${code}" applied! You save $${discount.toFixed(2)}.`, "success");
-  showNotification(`Coupon "${code}" applied!`, "success");
-}
+//   setState({ coupon: code, discount });
+//   renderSummary();
+//   setMsg(msgEl, `Coupon "${code}" applied! You save $${discount.toFixed(2)}.`, "success");
+//   showNotification(`Coupon "${code}" applied!`, "success");
+// }
 
-/* ════════════════════════════════════════════
-   CHECKOUT (UPDATED PAYLOAD)
-════════════════════════════════════════════ */
+
+  //  CHECKOUT 
 
 function initCheckout() {
   const btn = document.getElementById("btn-checkout");
@@ -279,13 +250,7 @@ function initAccountDropdown() {
   });
 }
 
-/* ════════════════════════════════════════════
-   HELPERS (UPDATED NORMALISATION)
-════════════════════════════════════════════ */
 
-/**
- * Normalise exact Java CartItemResponseDto into frontend state
- */
 function normaliseItems(serverData) {
   const rawList = Array.isArray(serverData) 
     ? serverData 
@@ -298,9 +263,8 @@ function normaliseItems(serverData) {
     price:             parseFloat(dto.unitPrice ?? dto.price ?? 0),
     image:             dto.productImageUrl || dto.image || dto.image_url || "../images/placeholder.png",
     quantity:          parseInt(dto.quantity || 1, 10),
-    // Map the organization details here so they persist in state
     organization_id:   dto.organization_id || dto.organizationId || null,
-    organization_name: dto.organization_name || dto.organizationName || null
+    store: dto.organizationName,
   }));
 }
 function setMsg(el, text, type) {
