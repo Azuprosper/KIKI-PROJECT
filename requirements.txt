@@ -1,13 +1,21 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Framework & Server
 fastapi
 uvicorn[standard]
-requests
+pydantic
+python-multipart
+python-dotenv
+
+# Machine Learning & AI
+torch
+torchvision
 sentence-transformers
 transformers
 numpy
-torch
-torchvision
-Pillow
 groq
-pydantic
-python-multipart
+
+# Utilities & Networking
+requests
 urllib3
+Pillow
