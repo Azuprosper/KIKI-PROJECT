@@ -1,4 +1,4 @@
-export const API_URL = "https://cut-unjustly-ellipse.ngrok-free.dev";
+export const API_URL = "https://api-chat-1l6r.onrender.com";
 
 export function toggleChat() {
   const chatWindow = document.getElementById("chat-window");
