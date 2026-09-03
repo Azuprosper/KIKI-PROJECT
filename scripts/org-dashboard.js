@@ -11,7 +11,7 @@ const ORG_PROFILE_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/org
 const ORG_SUMMARY_API_URL = 'https://kebab-rule-blandness.ngrok-free.dev/api/organizations/me/summary';
 
 // FastAPI AI engine endpoint
-const FASTAPI_REPORT_URL = 'https://api-chat-1l6r.onrender.com/organization/reports/weekly';
+const FASTAPI_REPORT_URL = 'https://api-chat-sg3z.onrender.com/organization/reports/weekly';
 
 loadMyProducts();
 
