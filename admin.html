@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIKI - Admin Dashboard</title>
+    <link rel="stylesheet" href="styleS/admin.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>KIKI<span class="blue-dot">.</span></h2>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="active">Dashboard</a>
+                <a href="#">Products</a>
+                <a href="#">Orders</a>
+                <a href="#">Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Dashboard Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div>
+                    <p class="subtitle">CONTROL CENTRE</p>
+                    <h1>Administrator Dashboard</h1>
+                </div>
+                <button class="logout-btn">Log out</button>
+            </header>
+
+            <!-- Metrics Cards -->
+            <section class="metrics-grid">
+                <div class="card">
+                    <p class="card-title">REGISTERED USERS</p>
+                    <h2 id="user-count">0</h2>
+                </div>
+                <div class="card">
+                    <p class="card-title">ORGANIZATIONS</p>
+                    <h2 id="org-count">0</h2>
+                </div>
+                <div class="card">
+                    <p class="card-title">TOTAL ORDERS</p>
+                    <h2>1,245</h2> <!-- Static for now -->
+                </div>
+                <div class="card">
+                    <p class="card-title">ACTIVE PRODUCTS</p>
+                    <h2>342</h2> <!-- Static for now -->
+                </div>
+            </section>
+
+            <!-- Data Table Directory -->
+            <section class="table-container">
+                <div class="table-header">
+                    <h3>User Directory</h3>
+                    <div class="search-box">
+                        <input type="text" placeholder="Search users...">
+                        <button class="search-btn">Search</button>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>USER</th>
+                            <th>EMAIL</th>
+                            <th>ROLE</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <!-- JS will populate this -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

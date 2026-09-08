@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (userRole === 'ORGANIZATION') {
                     window.location.href = 'org-dashboard.html';
                 } else if (userRole === 'ADMIN') {
-                    window.location.href = 'admin-dashboard.html';
+                    window.location.href = 'admin.html';
                 } else {
                     window.location.href = 'index.html';
                 }

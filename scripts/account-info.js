@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             logoLink.href = 'org-dashboard.html';
         } else if (role === 'ADMIN') {
             
-            logoLink.href = 'admin-dashboard.html';
+            logoLink.href = 'admin.html';
         } else {
             logoLink.href = 'index.html';
         }
