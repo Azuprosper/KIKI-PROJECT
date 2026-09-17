@@ -4,55 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KIKI - Admin Dashboard</title>
-    <link rel="stylesheet" href="styleS/admin.css">
+    <link rel="stylesheet" href="styles/admin.css">
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="brand">
                 <h2>KIKI<span class="blue-dot">.</span></h2>
             </div>
             <nav class="nav-links">
                 <a href="#" class="active">Dashboard</a>
-                <a href="#">Products</a>
+                <a href="#">Organizations</a>
                 <a href="#">Orders</a>
                 <a href="#">Settings</a>
             </nav>
         </aside>
 
-        <!-- Main Dashboard Area -->
         <main class="main-content">
-            <!-- Header -->
             <header class="top-header">
-                <div>
-                    <p class="subtitle">CONTROL CENTRE</p>
-                    <h1>Administrator Dashboard</h1>
+                <div class="header-left">
+                    <!-- The new hamburger toggle button -->
+                    <button id="sidebar-toggle" class="toggle-btn">&#9776;</button>
+                    <div>
+                        <p class="subtitle">CONTROL CENTRE</p>
+                        <h1>Administrator Dashboard</h1>
+                    </div>
                 </div>
                 <button class="logout-btn">Log out</button>
             </header>
 
-            <!-- Metrics Cards -->
-            <section class="metrics-grid">
-                <div class="card">
-                    <p class="card-title">REGISTERED USERS</p>
-                    <h2 id="user-count">0</h2>
+            <section class="metrics-container">
+                <!-- Top Row: 4 Columns (Financials) -->
+                <div class="metrics-row metrics-row-4">
+                    <div class="card highlight-card">
+                        <p class="card-title">ALL-TIME REVENUE</p>
+                        <h2 id="revenue-all-time">$0</h2>
+                        <p class="card-subtext" id="sales-all-time-units">0 units | 0 orders</p>
+                    </div>
+                    <div class="card">
+                        <p class="card-title">THIS MONTH'S REVENUE</p>
+                        <h2 id="revenue-month">$0</h2>
+                        <p class="card-subtext" id="sales-month-units">0 units | 0 orders</p>
+                    </div>
+                    <div class="card">
+                        <p class="card-title">TODAY'S REVENUE</p>
+                        <h2 id="revenue-today">$0</h2>
+                        <p class="card-subtext" id="sales-today-units">0 units | 0 orders</p>
+                    </div>
+                    <div class="card">
+                        <p class="card-title">TOTAL CHECKOUTS</p>
+                        <h2 id="total-checkouts">0</h2>
+                    </div>
                 </div>
-                <div class="card">
-                    <p class="card-title">ORGANIZATIONS</p>
-                    <h2 id="org-count">0</h2>
-                </div>
-                <div class="card">
-                    <p class="card-title">TOTAL ORDERS</p>
-                    <h2>1,245</h2> <!-- Static for now -->
-                </div>
-                <div class="card">
-                    <p class="card-title">ACTIVE PRODUCTS</p>
-                    <h2>342</h2> <!-- Static for now -->
+
+                <!-- Bottom Row: 3 Columns (Platform Data) -->
+                <div class="metrics-row metrics-row-3">
+                    <div class="card">
+                        <p class="card-title">REGISTERED USERS</p>
+                        <h2 id="user-count">0</h2>
+                    </div>
+                    <div class="card">
+                        <p class="card-title">ORGANIZATIONS</p>
+                        <h2 id="org-count">0</h2>
+                        <p class="card-subtext" id="org-stats">0 Verified | 0 Unverified</p>
+                    </div>
+                    <div class="card">
+                        <p class="card-title">ACTIVE PRODUCTS</p>
+                        <h2 id="product-count">0</h2>
+                    </div>
                 </div>
             </section>
 
-            <!-- Data Table Directory -->
             <section class="table-container">
                 <div class="table-header">
                     <h3>User Directory</h3>
@@ -72,12 +94,37 @@
                         </tr>
                     </thead>
                     <tbody id="user-table-body">
-                        <!-- JS will populate this -->
+                        <!-- Populated by JS -->
                     </tbody>
                 </table>
             </section>
         </main>
     </div>
-    <script src="app.js"></script>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logout-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to log out of the Administrator Dashboard?</p>
+            <div class="modal-actions">
+                <button id="cancel-logout" class="cancel-btn">Cancel</button>
+                <button id="confirm-logout" class="confirm-btn">Log out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Delete User</h2>
+            <p>Are you sure you want to permanently delete this account? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="cancel-delete" class="cancel-btn">Cancel</button>
+                <button id="confirm-delete" class="confirm-btn danger-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/admin.js"></script>
 </body>
 </html>
