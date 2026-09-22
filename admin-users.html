@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIKI - User Directory</title>
+    <link rel="stylesheet" href="styles/admin.css">
+    <link rel="icon" type="image/png" href="../images/kiki-header-logo.jpeg">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>KIKI<span class="blue-dot">.</span></h2>
+            </div>
+            <nav class="nav-links">
+                <a href="admin.html">Dashboard</a>
+                <a href="admin-products.html" id="nav-products">Products</a>
+                <a href="admin-users.html" class="active" id="nav-users">Users</a>
+                <a href="#">Organizations</a>
+                <a href="#">Orders</a>
+                <a href="#">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-left">
+                    <button id="sidebar-toggle" class="toggle-btn">&#9776;</button>
+                    <div>
+                        <p class="subtitle">CONTROL CENTRE</p>
+                        <h1>User Directory</h1>
+                    </div>
+                </div>
+                <button class="logout-btn">Log out</button>
+            </header>
+
+            <section class="table-container">
+                <div class="table-header">
+                    <h3>All Registered Users</h3>
+                    <div class="search-box">
+                        <input type="text" id="user-search-input" placeholder="Search users...">
+                        <button class="search-btn" id="user-search-btn">Search</button>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>USER</th>
+                            <th>EMAIL</th>
+                            <th>ROLE</th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <!-- Populated by scripts/admin-users.js or scripts/admin.js -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logout-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to log out of the Administrator Dashboard?</p>
+            <div class="modal-actions">
+                <button id="cancel-logout" class="cancel-btn">Cancel</button>
+                <button id="confirm-logout" class="confirm-btn">Log out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete User Confirmation Modal -->
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Delete User</h2>
+            <p>Are you sure you want to permanently delete this account? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="cancel-delete" class="cancel-btn">Cancel</button>
+                <button id="confirm-delete" class="confirm-btn danger-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/admin-users.js"></script>
+</body>
+</html>
