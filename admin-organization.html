@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIKI - Organizations Management</title>
+    <link rel="stylesheet" href="styles/admin.css">
+    <link rel="icon" type="image/png" href="../images/kiki-header-logo.jpeg">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>KIKI<span class="blue-dot">.</span></h2>
+            </div>
+            <nav class="nav-links">
+                <a href="admin.html">Dashboard</a>
+                <a href="admin-products.html" id="nav-products">Products</a>
+                <a href="admin-users.html" id="nav-users">Users</a>
+                <a href="admin-organization.html" class="active">Organizations</a>
+                <!-- <a href="#">Orders</a> -->
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-left">
+                    <button id="sidebar-toggle" class="toggle-btn">&#9776;</button>
+                    <div>
+                        <p class="subtitle">CONTROL CENTRE</p>
+                        <h1>Registered Organizations</h1>
+                    </div>
+                </div>
+                <button class="logout-btn">Log out</button>
+            </header>
+
+            <section class="table-container">
+                <div class="table-header">
+                    <h2>Organization Directory</h2>
+                    <div class="search-box">
+                        <input type="text" id="org-search-input" placeholder="Search by name or email...">
+                        <button class="search-btn" id="search-btn">Search</button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                          <tr>
+                              <th>ORGANIZATION</th>
+                              <th>DESCRIPTION</th>
+                              <th>STATUS</th>
+                              <th>ACTION</th>
+                          </tr>
+                      </thead>
+                        <tbody id="org-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Organization Status Confirmation Modal -->
+    <div id="status-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2 id="modal-title">Confirm Action</h2>
+            <p id="modal-message">Are you sure you want to change the status of this organization?</p>
+            <div class="modal-actions">
+                <button id="cancel-status" class="cancel-btn">Cancel</button>
+                <button id="confirm-status" class="confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logout-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to log out of the Administrator Dashboard?</p>
+            <div class="modal-actions">
+                <button id="cancel-logout" class="cancel-btn">Cancel</button>
+                <button id="confirm-logout" class="confirm-btn">Log out</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/admin-organizations.js"></script>
+</body>
+</html>
